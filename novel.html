@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css">\n  <script src="assets/js/bookmarks.js"></script>
   <style>
     .novel-page { padding: 42px 0 72px; }
     .breadcrumb { margin-bottom: 28px; color: #8c7c7f; font-size: .9rem; }
@@ -140,11 +140,12 @@
   </footer>
 
   <script>
-    const bookmarkBtn = document.getElementById('bookmarkBtn');
-    bookmarkBtn.addEventListener('click', () => {
-      const saved = bookmarkBtn.dataset.saved === 'true';
-      bookmarkBtn.dataset.saved = String(!saved);
-      bookmarkBtn.textContent = saved ? '♡ Tambah Bookmark' : '♥ Tersimpan di Bookmark';
+    NovelaraBookmarks.renderButton(document.getElementById('bookmarkBtn'), {
+      id:'hujan-di-bulan-juni',
+      title:'Hujan di Bulan Juni',
+      author:'Novelara',
+      genre:'Romance',
+      url:'novel.html'
     });
   </script>
 </body>
