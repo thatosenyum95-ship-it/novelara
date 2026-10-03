@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Detail novel, sinopsis, informasi cerita, dan daftar chapter Novelara.">
+  <title>Hujan di Bulan Juni — Novelara</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .novel-page { padding: 42px 0 72px; }
+    .breadcrumb { margin-bottom: 28px; color: #8c7c7f; font-size: .9rem; }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .novel-hero { display:grid; grid-template-columns:220px 1fr; gap:38px; align-items:start; }
+    .novel-cover { min-height:315px; border-radius:18px; padding:26px 22px; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(145deg,#f3d8df,#b86f82); color:#fff; box-shadow:0 18px 45px rgba(74,42,51,.16); }
+    .novel-cover small { font-weight:700; letter-spacing:.14em; text-transform:uppercase; opacity:.82; }
+    .novel-cover h2 { font:400 2.2rem/1.05 "DM Serif Display",serif; margin:0; }
+    .novel-cover span { font-size:.82rem; opacity:.85; }
+    .novel-info h1 { margin:0 0 10px; font:400 clamp(2.3rem,5vw,4rem)/1.05 "DM Serif Display",serif; color:#39282d; }
+    .author { color:#8d6972; margin:0 0 18px; }
+    .tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+    .tag { padding:7px 11px; border-radius:999px; background:#f6e9ec; color:#76515a; font-size:.82rem; font-weight:700; }
+    .meta-row { display:flex; flex-wrap:wrap; gap:18px; margin-bottom:24px; color:#66565a; font-size:.92rem; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border-radius:12px; border:1px solid #ead9dd; text-decoration:none; font:700 .9rem "Manrope",sans-serif; cursor:pointer; }
+    .btn-primary { background:#a8586c; color:#fff; border-color:#a8586c; }
+    .btn-secondary { background:#fff; color:#6c4d56; }
+    .content-grid { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(260px,.7fr); gap:28px; margin-top:42px; }
+    .panel { background:#fff; border:1px solid #eee2e5; border-radius:18px; padding:26px; box-shadow:0 10px 30px rgba(74,42,51,.05); }
+    .panel h2 { margin:0 0 16px; font:400 1.7rem "DM Serif Display",serif; color:#402d33; }
+    .synopsis { color:#6d5c61; line-height:1.85; margin:0; }
+    .chapter-list { display:grid; gap:8px; }
+    .chapter { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:15px 16px; border-radius:12px; background:#fbf7f8; text-decoration:none; color:#4c393f; border:1px solid transparent; }
+    .chapter:hover { border-color:#ead9dd; }
+    .chapter strong { display:block; font-size:.94rem; }
+    .chapter small { color:#9a888d; margin-top:4px; display:block; }
+    .chapter-status { font-size:.76rem; font-weight:700; color:#9b6572; white-space:nowrap; }
+    .ad-box { margin:28px 0; min-height:92px; display:flex; align-items:center; justify-content:center; border:1px dashed #d9c7cc; border-radius:14px; color:#a49398; background:#fcf9fa; font-size:.8rem; letter-spacing:.04em; }
+    .stats { display:grid; gap:13px; }
+    .stat { display:flex; justify-content:space-between; color:#77676b; font-size:.9rem; }
+    .stat strong { color:#49363c; }
+    @media (max-width:760px) {
+      .novel-page { padding-top:28px; }
+      .novel-hero { grid-template-columns:1fr; }
+      .novel-cover { min-height:260px; max-width:220px; }
+      .content-grid { grid-template-columns:1fr; }
+      .panel { padding:20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html">Novelara</a>
+      <nav>
+        <a href="index.html">Beranda</a>
+        <a href="index.html#novel">Novel</a>
+        <a href="index.html#genre">Genre</a>
+        <a href="#">Bookmark</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container novel-page">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / Novel / Hujan di Bulan Juni</div>
+
+    <section class="novel-hero">
+      <div class="novel-cover">
+        <small>Novelara Original</small>
+        <h2>Hujan di<br>Bulan Juni</h2>
+        <span>Romance · Drama</span>
+      </div>
+
+      <div class="novel-info">
+        <h1>Hujan di Bulan Juni</h1>
+        <p class="author">oleh <strong>Novelara</strong></p>
+        <div class="tags">
+          <span class="tag">Romance</span>
+          <span class="tag">Drama Cinta</span>
+          <span class="tag">Second Chance</span>
+        </div>
+        <div class="meta-row">
+          <span>★ 4.8 / 5</span>
+          <span>12.4K pembaca</span>
+          <span>12 chapter</span>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="#chapters">Mulai Membaca</a>
+          <button class="btn btn-secondary" type="button" id="bookmarkBtn">♡ Tambah Bookmark</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="ad-box">AREA IKLAN — DIATUR DARI ADMIN</div>
+
+    <section class="content-grid">
+      <div>
+        <article class="panel">
+          <h2>Sinopsis</h2>
+          <p class="synopsis">Mereka pernah saling mencintai, lalu memilih pergi ketika keadaan memaksa. Bertahun-tahun kemudian, sebuah pertemuan tak terduga membawa kembali perasaan yang belum benar-benar selesai. Di antara hujan bulan Juni, kenangan lama, dan kesempatan kedua, mereka harus menentukan apakah cinta memang layak diperjuangkan sekali lagi.</p>
+        </article>
+
+        <article class="panel" id="chapters" style="margin-top:22px">
+          <h2>Daftar Chapter</h2>
+          <div class="chapter-list">
+            <a class="chapter" href="#">
+              <div><strong>Bab 1 — Hujan yang Membawa Pulang</strong><small>4 Oktober 2026</small></div>
+              <span class="chapter-status">Baca</span>
+            </a>
+            <a class="chapter" href="#"><div><strong>Bab 2 — Nama yang Masih Sama</strong><small>2 Oktober 2026</small></div><span class="chapter-status">Baca</span></a>
+            <a class="chapter" href="#"><div><strong>Bab 3 — Percakapan Setelah Senja</strong><small>30 September 2026</small></div><span class="chapter-status">Baca</span></a>
+            <a class="chapter" href="#"><div><strong>Bab 4 — Hal yang Tak Pernah Selesai</strong><small>28 September 2026</small></div><span class="chapter-status">Baca</span></a>
+            <a class="chapter" href="#"><div><strong>Bab 5 — Sebuah Kesempatan</strong><small>26 September 2026</small></div><span class="chapter-status">Baca</span></a>
+            <a class="chapter" href="#"><div><strong>Bab 6 — Di Bawah Langit yang Sama</strong><small>24 September 2026</small></div><span class="chapter-status">Baca</span></a>
+            <a class="chapter" href="#"><div><strong>Bab 7 — Surat yang Tertinggal</strong><small>22 September 2026</small></div><span class="chapter-status">Baca</span></a>
+            <a class="chapter" href="#"><div><strong>Bab 8 — Jangan Pergi Lagi</strong><small>20 September 2026</small></div><span class="chapter-status">Baca</span></a>
+          </div>
+        </article>
+      </div>
+
+      <aside class="panel">
+        <h2>Info Novel</h2>
+        <div class="stats">
+          <div class="stat"><span>Status</span><strong>Berjalan</strong></div>
+          <div class="stat"><span>Genre utama</span><strong>Romance</strong></div>
+          <div class="stat"><span>Bahasa</span><strong>Indonesia</strong></div>
+          <div class="stat"><span>Diperbarui</span><strong>4 Okt 2026</strong></div>
+        </div>
+        <div class="ad-box" style="margin-bottom:0">IKLAN</div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 Novelara. Cerita yang menemukan hati.</p>
+    </div>
+  </footer>
+
+  <script>
+    const bookmarkBtn = document.getElementById('bookmarkBtn');
+    bookmarkBtn.addEventListener('click', () => {
+      const saved = bookmarkBtn.dataset.saved === 'true';
+      bookmarkBtn.dataset.saved = String(!saved);
+      bookmarkBtn.textContent = saved ? '♡ Tambah Bookmark' : '♥ Tersimpan di Bookmark';
+    });
+  </script>
+</body>
+</html>
