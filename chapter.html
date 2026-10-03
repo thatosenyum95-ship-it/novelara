@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css">\n  <script src="assets/js/bookmarks.js"></script>
   <style>
     body { background:#fcf9f8; }
     .reader-page { padding:34px 0 80px; }
@@ -158,11 +158,12 @@
       content.style.fontSize = fontSize + 'rem';
     });
 
-    const bookmarkBtn = document.getElementById('bookmarkBtn');
-    bookmarkBtn.addEventListener('click', () => {
-      const saved = bookmarkBtn.dataset.saved === 'true';
-      bookmarkBtn.dataset.saved = String(!saved);
-      bookmarkBtn.textContent = saved ? '♡ Bookmark' : '♥ Tersimpan';
+    NovelaraBookmarks.renderButton(document.getElementById('bookmarkBtn'), {
+      id:'hujan-di-bulan-juni',
+      title:'Hujan di Bulan Juni',
+      author:'Novelara',
+      genre:'Romance',
+      url:'novel.html'
     });
 
     const progressBar = document.getElementById('progressBar');
