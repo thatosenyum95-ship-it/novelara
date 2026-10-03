@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Panel — Novelara</title>
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+<aside class="sidebar">
+<a class="admin-brand" href="index.html"><span>N</span> Novelara</a>
+<nav id="adminNav">
+<a href="#dashboard" data-section="dashboard">Dashboard</a>
+<a href="#novel" data-section="novel">Novel</a>
+<a href="#chapter" data-section="chapter">Chapter</a>
+<a href="#monetisasi" data-section="monetisasi">Monetisasi</a>
+<a href="#pengaturan" data-section="pengaturan">Pengaturan</a>
+</nav>
+<div class="sidebar-footer"><a class="back-link" href="../index.html">← Lihat Website</a><button class="logout-link" type="button" id="logoutBtn">Keluar</button></div>
+</aside>
+<main class="admin-main">
+<section class="admin-section" id="dashboard">
+<header><div><p class="eyebrow">ADMIN PANEL</p><h1>Dashboard</h1><p class="muted">Ringkasan aktivitas Novelara.</p></div><span class="status">● Sistem aktif</span></header>
+<div class="stats">
+<article><span>Pengunjung</span><strong>1,248</strong><small>30 hari terakhir</small></article>
+<article><span>Pembaca</span><strong>864</strong><small>pembaca aktif</small></article>
+<article><span>Novel</span><strong>24</strong><small>diterbitkan</small></article>
+<article><span>Pendapatan Iklan</span><strong>Rp 428K</strong><small>estimasi bulan ini</small></article>
+</div>
+<div class="panel"><h2>Novel populer</h2><p class="muted">Berdasarkan jumlah pembacaan.</p>
+<div class="table"><div class="row head"><span>Novel</span><span>Genre</span><span>Pembaca</span></div>
+<div class="row"><span>Hujan di Bulan Juni</span><span>Romance</span><strong>3,421</strong></div>
+<div class="row"><span>Pesan yang Tak Pernah Terkirim</span><span>Drama Cinta</span><strong>2,987</strong></div>
+<div class="row"><span>Ketika Kita Bertemu Lagi</span><span>Second Chance</span><strong>2,451</strong></div></div></div>
+</section>
+
+<section class="admin-section" id="novel">
+<header><div><p class="eyebrow">KONTEN</p><h1>Kelola Novel</h1><p class="muted">Tambah, edit, hapus, dan atur genre novel.</p></div><button type="button">+ Tambah Novel</button></header>
+<div class="panel"><div class="table"><div class="row head"><span>Judul</span><span>Genre</span><span>Status</span><span>Aksi</span></div>
+<div class="row"><span>Hujan di Bulan Juni</span><span>Romance</span><span class="pill">Terbit</span><span>Edit · Hapus</span></div>
+<div class="row"><span>Pesan yang Tak Pernah Terkirim</span><span>Drama Cinta</span><span class="pill">Terbit</span><span>Edit · Hapus</span></div></div></div>
+</section>
+
+<section class="admin-section" id="chapter">
+<header><div><p class="eyebrow">KONTEN</p><h1>Kelola Chapter</h1><p class="muted">Tulis, terbitkan, atau jadwalkan chapter berikutnya.</p></div><button type="button">+ Tulis Chapter</button></header>
+<div class="panel"><div class="table"><div class="row head"><span>Novel</span><span>Chapter</span><span>Status</span><span>Terbit</span></div>
+<div class="row"><span>Hujan di Bulan Juni</span><span>Bab 12 — Yang Tertinggal</span><span class="pill">Terbit</span><span>04 Okt 2026</span></div>
+<div class="row"><span>Pesan yang Tak Pernah Terkirim</span><span>Bab 8 — Surat Terakhir</span><span class="pill">Terjadwal</span><span>05 Okt 2026</span></div></div></div>
+</section>
+
+<section class="admin-section" id="monetisasi">
+<header><div><p class="eyebrow">PENDAPATAN</p><h1>Monetisasi</h1><p class="muted">Atur iklan yang tampil di area pembaca.</p></div></header>
+<div class="form-grid">
+<div class="panel"><h2>Posisi iklan</h2>
+<label class="switch-row">Header <input type="checkbox" checked></label>
+<label class="switch-row">Di antara chapter <input type="checkbox" checked></label>
+<label class="switch-row">Footer <input type="checkbox"></label></div>
+<div class="panel"><h2>Ad code</h2><textarea rows="9" placeholder="Tempel kode iklan dari jaringan iklan di sini..."></textarea><button type="button">Simpan Pengaturan Iklan</button></div>
+</div>
+</section>
+
+<section class="admin-section" id="pengaturan">
+<header><div><p class="eyebrow">KONFIGURASI</p><h1>Pengaturan Website</h1><p class="muted">Identitas, SEO, dan halaman informasi Novelara.</p></div></header>
+<div class="panel settings-grid">
+<label>Nama Website<input value="Novelara"></label>
+<label>Tagline<input value="Cerita yang Menemukan Hati"></label>
+<label>Logo<input placeholder="URL logo"></label>
+<label>SEO Description<textarea rows="4">Novel romance Indonesia yang menghadirkan kisah cinta untuk dibaca kapan saja.</textarea></label>
+<label>About<textarea rows="4" placeholder="Deskripsi tentang Novelara..."></textarea></label>
+<label>Contact<textarea rows="4" placeholder="Email atau informasi kontak..."></textarea></label>
+</div>
+</section>
+</main>
+</div>
+<script>
+const sections=[...document.querySelectorAll('.admin-section')];
+const links=[...document.querySelectorAll('#adminNav a')];
+function showSection(id){
+ const valid=sections.some(s=>s.id===id)?id:'dashboard';
+ sections.forEach(s=>s.classList.toggle('active-section',s.id===valid));
+ links.forEach(a=>a.classList.toggle('active',a.dataset.section===valid));
+ document.title=(valid==='dashboard'?'Dashboard':valid.charAt(0).toUpperCase()+valid.slice(1))+' — Novelara Admin';
+}
+function route(){showSection(location.hash.replace('#','')||'dashboard');}
+window.addEventListener('hashchange',route); route();
+document.getElementById('logoutBtn').addEventListener('click',()=>{location.href='login.html';});
+</script>
+</body>
+</html>
