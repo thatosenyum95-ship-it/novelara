@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Temukan semua novel di Novelara. Cari berdasarkan judul, penulis, atau genre favoritmu.">
+  <title>Semua Novel — Novelara</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .catalog-page { padding:42px 0 76px; }
+    .catalog-head { margin-bottom:28px; }
+    .catalog-head h1 { margin:0 0 8px; font:400 clamp(2.4rem,6vw,4rem)/1.05 "DM Serif Display",serif; color:#39282d; }
+    .catalog-head p { margin:0; color:#88777c; }
+    .filters { background:#fff; border:1px solid #eee2e5; border-radius:18px; padding:18px; box-shadow:0 10px 30px rgba(74,42,51,.05); margin-bottom:32px; }
+    .search-row { display:flex; gap:10px; margin-bottom:16px; }
+    .search-box { flex:1; min-width:0; position:relative; }
+    .search-box input { width:100%; box-sizing:border-box; height:48px; border:1px solid #e6dadd; border-radius:12px; padding:0 15px 0 42px; outline:none; color:#4c393f; font:500 .9rem Manrope,sans-serif; background:#fcf9fa; }
+    .search-box input:focus { border-color:#bb7b8b; background:#fff; }
+    .search-icon { position:absolute; left:15px; top:14px; color:#9d8a90; pointer-events:none; }
+    .search-btn { border:0; border-radius:12px; padding:0 20px; background:#a8586c; color:#fff; font:700 .88rem Manrope,sans-serif; cursor:pointer; }
+    .genre-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .genre-btn { border:1px solid #e7d9dc; background:#fff; color:#765a62; padding:8px 13px; border-radius:999px; font:700 .78rem Manrope,sans-serif; cursor:pointer; }
+    .genre-btn.active, .genre-btn:hover { background:#f4e5e9; border-color:#e1c5cc; color:#8f5264; }
+    .catalog-meta { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:15px; color:#8c7b80; font-size:.82rem; }
+    .novel-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+    .novel-card { min-width:0; background:#fff; border:1px solid #eee2e5; border-radius:16px; overflow:hidden; box-shadow:0 8px 25px rgba(74,42,51,.045); transition:transform .2s,box-shadow .2s; }
+    .novel-card:hover { transform:translateY(-3px); box-shadow:0 15px 35px rgba(74,42,51,.09); }
+    .cover { aspect-ratio:3/4.25; padding:17px; display:flex; flex-direction:column; justify-content:space-between; color:#fff; background:linear-gradient(145deg,#e8c1ca,#a8586c); }
+    .cover.alt1 { background:linear-gradient(145deg,#d9c4c7,#87616a); }
+    .cover.alt2 { background:linear-gradient(145deg,#edd8bc,#a97955); }
+    .cover.alt3 { background:linear-gradient(145deg,#c8d8d1,#657e76); }
+    .cover small { font:700 .62rem Manrope,sans-serif; letter-spacing:.12em; text-transform:uppercase; opacity:.82; }
+    .cover strong { font:400 1.5rem/1.03 "DM Serif Display",serif; }
+    .card-body { padding:15px; }
+    .card-body h2 { margin:0 0 5px; font:400 1.25rem/1.15 "DM Serif Display",serif; color:#422f35; }
+    .author { color:#948287; font-size:.75rem; margin-bottom:10px; }
+    .card-tags { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px; }
+    .card-tag { color:#8e5e6b; background:#f8edef; border-radius:6px; padding:4px 7px; font-size:.64rem; font-weight:700; }
+    .card-foot { display:flex; justify-content:space-between; color:#89777d; font-size:.7rem; }
+    .empty { display:none; text-align:center; padding:55px 20px; border:1px dashed #dccbd0; border-radius:16px; color:#89777d; }
+    .empty strong { display:block; color:#594249; font:400 1.5rem "DM Serif Display",serif; margin-bottom:6px; }
+    .ad-box { margin:30px 0; min-height:90px; display:flex; align-items:center; justify-content:center; border:1px dashed #d9c7cc; border-radius:14px; color:#a49398; background:#fcf9fa; font-size:.76rem; letter-spacing:.05em; }
+    @media (max-width:980px) { .novel-grid { grid-template-columns:repeat(3,1fr); } }
+    @media (max-width:700px) {
+      .catalog-page { padding-top:28px; }
+      .search-row { flex-direction:column; }
+      .search-btn { height:46px; }
+      .novel-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+      .card-body { padding:12px; }
+      .cover strong { font-size:1.25rem; }
+    }
+    @media (max-width:400px) { .novel-grid { grid-template-columns:1fr 1fr; } .catalog-meta { align-items:flex-start; flex-direction:column; gap:4px; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html">Novelara</a>
+      <nav>
+        <a href="index.html">Beranda</a>
+        <a href="novels.html" aria-current="page">Novel</a>
+        <a href="#genre">Genre</a>
+        <a href="#">Bookmark</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container catalog-page">
+    <header class="catalog-head">
+      <h1>Semua Novel</h1>
+      <p>Temukan cerita yang ingin kamu baca hari ini. ✨</p>
+    </header>
+
+    <section class="filters" aria-label="Pencarian dan filter genre">
+      <div class="search-row">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input id="searchInput" type="search" placeholder="Cari judul atau penulis..." autocomplete="off">
+        </div>
+        <button class="search-btn" id="searchBtn" type="button">Cari Novel</button>
+      </div>
+      <div class="genre-row" id="genre">
+        <button class="genre-btn active" data-genre="all" type="button">Semua</button>
+        <button class="genre-btn" data-genre="Romance" type="button">Romance</button>
+        <button class="genre-btn" data-genre="Drama Cinta" type="button">Drama Cinta</button>
+        <button class="genre-btn" data-genre="Second Chance" type="button">Second Chance</button>
+        <button class="genre-btn" data-genre="Teen Romance" type="button">Teen Romance</button>
+        <button class="genre-btn" data-genre="Marriage Story" type="button">Marriage Story</button>
+        <button class="genre-btn" data-genre="Office Romance" type="button">Office Romance</button>
+      </div>
+    </section>
+
+    <div class="catalog-meta">
+      <span id="resultText">Menampilkan semua novel</span>
+      <span>Novel terbaru & terpopuler</span>
+    </div>
+
+    <section class="novel-grid" id="novelGrid">
+      <article class="novel-card" data-title="Hujan di Bulan Juni" data-author="Novelara" data-genres="Romance,Drama Cinta,Second Chance">
+        <a href="novel.html" aria-label="Hujan di Bulan Juni">
+          <div class="cover"><small>Novelara Original</small><strong>Hujan di<br>Bulan Juni</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Hujan di Bulan Juni</h2><div class="author">Novelara</div>
+          <div class="card-tags"><span class="card-tag">Romance</span><span class="card-tag">Second Chance</span></div>
+          <div class="card-foot"><span>★ 4.8</span><span>12.4K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="Pesan yang Tak Pernah Terkirim" data-author="Nara Aulia" data-genres="Romance,Drama Cinta">
+        <a href="novel.html" aria-label="Pesan yang Tak Pernah Terkirim">
+          <div class="cover alt1"><small>Romance</small><strong>Pesan yang<br>Tak Pernah<br>Terkirim</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Pesan yang Tak Pernah Terkirim</h2><div class="author">Nara Aulia</div>
+          <div class="card-tags"><span class="card-tag">Romance</span><span class="card-tag">Drama Cinta</span></div>
+          <div class="card-foot"><span>★ 4.7</span><span>9.8K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="Ketika Kita Bertemu Lagi" data-author="Raka Pratama" data-genres="Second Chance,Romance">
+        <a href="novel.html" aria-label="Ketika Kita Bertemu Lagi">
+          <div class="cover alt2"><small>Second Chance</small><strong>Ketika Kita<br>Bertemu Lagi</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Ketika Kita Bertemu Lagi</h2><div class="author">Raka Pratama</div>
+          <div class="card-tags"><span class="card-tag">Second Chance</span><span class="card-tag">Romance</span></div>
+          <div class="card-foot"><span>★ 4.6</span><span>8.1K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="Rumah yang Bernama Kamu" data-author="Alya Maheswari" data-genres="Marriage Story,Drama Cinta">
+        <a href="novel.html" aria-label="Rumah yang Bernama Kamu">
+          <div class="cover alt3"><small>Marriage Story</small><strong>Rumah yang<br>Bernama Kamu</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Rumah yang Bernama Kamu</h2><div class="author">Alya Maheswari</div>
+          <div class="card-tags"><span class="card-tag">Marriage Story</span><span class="card-tag">Drama Cinta</span></div>
+          <div class="card-foot"><span>★ 4.5</span><span>6.7K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="CEO di Balik Meja" data-author="Mira Senja" data-genres="Office Romance,Romance">
+        <a href="novel.html" aria-label="CEO di Balik Meja">
+          <div class="cover alt1"><small>Office Romance</small><strong>CEO di<br>Balik Meja</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>CEO di Balik Meja</h2><div class="author">Mira Senja</div>
+          <div class="card-tags"><span class="card-tag">Office Romance</span><span class="card-tag">Romance</span></div>
+          <div class="card-foot"><span>★ 4.4</span><span>5.9K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="Seragam dan Surat Cinta" data-author="Dinda Kirana" data-genres="Teen Romance,Romance">
+        <a href="novel.html" aria-label="Seragam dan Surat Cinta">
+          <div class="cover alt2"><small>Teen Romance</small><strong>Seragam dan<br>Surat Cinta</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Seragam dan Surat Cinta</h2><div class="author">Dinda Kirana</div>
+          <div class="card-tags"><span class="card-tag">Teen Romance</span><span class="card-tag">Romance</span></div>
+          <div class="card-foot"><span>★ 4.3</span><span>4.8K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="Setelah Kita Menikah" data-author="Rania Putri" data-genres="Marriage Story,Romance">
+        <a href="novel.html" aria-label="Setelah Kita Menikah">
+          <div class="cover"><small>Marriage Story</small><strong>Setelah Kita<br>Menikah</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Setelah Kita Menikah</h2><div class="author">Rania Putri</div>
+          <div class="card-tags"><span class="card-tag">Marriage Story</span><span class="card-tag">Romance</span></div>
+          <div class="card-foot"><span>★ 4.2</span><span>3.9K pembaca</span></div>
+        </div>
+      </article>
+
+      <article class="novel-card" data-title="Kopi di Lantai Dua" data-author="Fajar Aditya" data-genres="Office Romance,Drama Cinta">
+        <a href="novel.html" aria-label="Kopi di Lantai Dua">
+          <div class="cover alt3"><small>Office Romance</small><strong>Kopi di<br>Lantai Dua</strong></div>
+        </a>
+        <div class="card-body">
+          <h2>Kopi di Lantai Dua</h2><div class="author">Fajar Aditya</div>
+          <div class="card-tags"><span class="card-tag">Office Romance</span><span class="card-tag">Drama Cinta</span></div>
+          <div class="card-foot"><span>★ 4.1</span><span>3.2K pembaca</span></div>
+        </div>
+      </article>
+    </section>
+
+    <div class="empty" id="emptyState">
+      <strong>Novel tidak ditemukan</strong>
+      Coba gunakan kata kunci lain atau pilih genre yang berbeda.
+    </div>
+
+    <div class="ad-box">AREA IKLAN — DIATUR DARI ADMIN</div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><p>© 2026 Novelara. Cerita yang menemukan hati.</p></div>
+  </footer>
+
+  <script>
+    const cards = [...document.querySelectorAll('.novel-card')];
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const genreButtons = [...document.querySelectorAll('.genre-btn')];
+    const resultText = document.getElementById('resultText');
+    const emptyState = document.getElementById('emptyState');
+    let selectedGenre = 'all';
+
+    function filterNovels() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visible = 0;
+
+      cards.forEach(card => {
+        const title = card.dataset.title.toLowerCase();
+        const author = card.dataset.author.toLowerCase();
+        const genres = card.dataset.genres.split(',').map(g => g.trim());
+        const matchesSearch = !query || title.includes(query) || author.includes(query);
+        const matchesGenre = selectedGenre === 'all' || genres.includes(selectedGenre);
+        const show = matchesSearch && matchesGenre;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      resultText.textContent = query || selectedGenre !== 'all'
+        ? visible + ' novel ditemukan'
+        : 'Menampilkan semua novel (' + visible + ')';
+      emptyState.style.display = visible ? 'none' : 'block';
+    }
+
+    searchInput.addEventListener('input', filterNovels);
+    searchBtn.addEventListener('click', filterNovels);
+
+    genreButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        selectedGenre = button.dataset.genre;
+        genreButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+        filterNovels();
+      });
+    });
+
+    filterNovels();
+  </script>
+</body>
+</html>
