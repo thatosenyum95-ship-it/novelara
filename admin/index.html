@@ -111,7 +111,7 @@ const nav=$('#adminNav');if(nav&&!$('#usersLink')){const a=document.createElemen
 const originalRoute = window.route;
 async function refreshAll(){try{await Promise.all([loadDashboard(),loadNovels(),loadChapters(),loadGenres(),loadAds(),loadSettings(),loadUsers()])}catch(e){console.error(e);toast(e.message||'Gagal memuat data Admin',false)}}
 document.addEventListener('click',e=>{if(e.target.matches('#novel header button'))editNovel(null);if(e.target.matches('#chapter header button'))editChapter(null)});
-window.addEventListener('hashchange',()=>{if(location.hash==='#users'){ $('.admin-section').forEach(s=>s.classList.toggle('active-section',s.id==='users'));$('#adminNav a').forEach(a=>a.classList.toggle('active',a.dataset.section==='users')) }});
+window.addEventListener('hashchange',()=>{if(location.hash==='#users'){ $$('.admin-section').forEach(s=>s.classList.toggle('active-section',s.id==='users'));$$('#adminNav a').forEach(a=>a.classList.toggle('active',a.dataset.section==='users')) }});
 await refreshAll();
 </script>
 <script src="../assets/js/theme.js"></script>
