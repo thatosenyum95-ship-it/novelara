@@ -40,7 +40,7 @@ document.getElementById('logoutBtn').addEventListener('click',async()=>{await su
 import { supabase } from '../assets/js/supabase.js';
 
 const $ = (s, r=document) => r.querySelector(s);
-const $ = (s, r=document) => [...r.querySelectorAll(s)];
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const esc = (v='') => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const slugify = v => v.toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const toast = (msg, ok=true) => { let x=$('#adminToast'); if(!x){x=document.createElement('div');x.id='adminToast';x.style='position:fixed;right:20px;bottom:20px;z-index:9999;padding:12px 16px;border-radius:12px;background:#18181b;color:#fff;box-shadow:0 10px 30px #0002';document.body.appendChild(x)} x.textContent=msg;x.style.background=ok?'#18181b':'#991b1b';setTimeout(()=>x.remove(),2600); };
