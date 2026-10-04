@@ -14,7 +14,7 @@
     .breadcrumb { margin-bottom: 28px; color: #8c7c7f; font-size: .9rem; }
     .breadcrumb a { color: inherit; text-decoration: none; }
     .novel-hero { display:grid; grid-template-columns:220px 1fr; gap:38px; align-items:start; }
-    .novel-cover { min-height:315px; border-radius:18px; padding:26px 22px; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(145deg,#f3d8df,#b86f82); color:#fff; box-shadow:0 18px 45px rgba(74,42,51,.16); }
+    .novel-cover { min-height:315px; background-size:cover; background-position:center; border-radius:18px; padding:26px 22px; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(145deg,#f3d8df,#b86f82); color:#fff; box-shadow:0 18px 45px rgba(74,42,51,.16); }
     .novel-cover small { font-weight:700; letter-spacing:.14em; text-transform:uppercase; opacity:.82; }
     .novel-cover h2 { font:400 2.2rem/1.05 "DM Serif Display",serif; margin:0; }
     .novel-cover span { font-size:.82rem; opacity:.85; }
@@ -121,7 +121,7 @@ try{
  if(!novel){location.replace('novels.html');throw new Error('Novel not found');}
  document.title=novel.title+' — Novelara'; window.setNovelSchema(novel);
  document.querySelector('.breadcrumb').innerHTML='<a href="index.html">Beranda</a> / Novel / '+escapeHtml(novel.title);
- document.querySelector('.novel-cover h2').innerHTML=escapeHtml(novel.title).replace(/ /g,'<br>');
+ const cover=document.querySelector('.novel-cover'); if(novel.cover_url){cover.style.backgroundImage='url("'+novel.cover_url.replace(/"/g,'&quot;')+'")'; cover.style.backgroundSize='cover'; cover.style.backgroundPosition='center';} document.querySelector('.novel-cover h2').innerHTML=escapeHtml(novel.title).replace(/ /g,'<br>');
  document.querySelector('.novel-cover span').textContent=(novel.novel_genres||[]).map(x=>x.genre?.name).filter(Boolean).slice(0,2).join(' · ');
  document.querySelector('.novel-info h1').textContent=novel.title;
  document.querySelector('.novel-info .author strong').textContent=novel.author_name||'Novelara';
