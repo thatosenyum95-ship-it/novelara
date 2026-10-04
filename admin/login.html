@@ -3,6 +3,20 @@
 <body class="login-page"><main class="login-card">
 <div class="brand-mark">N</div><p class="eyebrow">NOVELARA ADMIN</p><h1>Selamat datang kembali.</h1>
 <p class="muted">Masuk untuk mengelola novel, chapter, iklan, dan pengaturan website.</p>
-<form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin@novelara.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="••••••••"></label><button type="submit">Masuk ke Admin</button><p id="loginMessage" class="form-message"></p></form>
+<form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin@novelara.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="••••••••"></label><button id="loginBtn" type="submit">Masuk ke Admin</button><p id="loginMessage" class="form-message" role="alert"></p></form>
 <a class="back-link" href="../index.html">← Kembali ke Novelara</a>
-</main><script>document.getElementById('loginForm').addEventListener('submit',function(e){e.preventDefault();document.getElementById('loginMessage').textContent='Autentikasi Supabase akan dihubungkan pada tahap backend.';});</script></body></html>
+</main>
+<script type="module">
+import { supabase } from '../assets/js/supabase.js';
+const form=document.getElementById('loginForm'), btn=document.getElementById('loginBtn'), msg=document.getElementById('loginMessage');
+const { data:{session} }=await supabase.auth.getSession();
+if(session){ const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle(); if(profile?.role==='admin') location.replace('index.html'); else await supabase.auth.signOut(); }
+form.addEventListener('submit',async e=>{
+ e.preventDefault(); msg.textContent=''; btn.disabled=true; btn.textContent='Memeriksa…';
+ const {data,error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});
+ if(error){msg.textContent=error.message;btn.disabled=false;btn.textContent='Masuk ke Admin';return;}
+ const {data:profile,error:profileError}=await supabase.from('profiles').select('role').eq('id',data.user.id).maybeSingle();
+ if(profileError || profile?.role!=='admin'){await supabase.auth.signOut();msg.textContent='Akun ini tidak memiliki akses Admin.';btn.disabled=false;btn.textContent='Masuk ke Admin';return;}
+ location.replace('index.html');
+});
+</script></body></html>
