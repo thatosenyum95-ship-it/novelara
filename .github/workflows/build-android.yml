@@ -11,24 +11,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-
       - name: Install dependencies
         run: npm install
-
       - name: Add Android platform
         run: npx cap add android
-
       - name: Install final Novelara app icon
         shell: bash
         run: |
@@ -63,17 +58,14 @@ jobs:
           </adaptive-icon>
           EOF
           cp assets/novelara-icon.xml android/app/src/main/res/mipmap-anydpi/ic_launcher.xml
-
       - name: Sync Capacitor
         run: npx cap sync android
-
       - name: Prepare release signing
         working-directory: android
         shell: bash
         run: |
-          # Generate/use the standard Android debug keystore only as a temporary
-          # signing key so the release APK is directly installable.
-          ./gradlew assembleDebug
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v             -keystore "$HOME/.android/novelara-release.keystore"             -storepass android -keypass android             -alias novelara -keyalg RSA -keysize 2048 -validity 10000             -dname "CN=Novelara, OU=Novelara, O=Novelara, L=Pontianak, ST=West Kalimantan, C=ID"
           python3 - <<'PY'
           from pathlib import Path
           p = Path("app/build.gradle")
@@ -81,9 +73,9 @@ jobs:
           signing = '''
               signingConfigs {
                   release {
-                      storeFile file(System.getProperty("user.home") + "/.android/debug.keystore")
+                      storeFile file(System.getProperty("user.home") + "/.android/novelara-release.keystore")
                       storePassword "android"
-                      keyAlias "AndroidDebugKey"
+                      keyAlias "novelara"
                       keyPassword "android"
                   }
               }
@@ -94,11 +86,9 @@ jobs:
               s = s.replace("buildTypes {", "buildTypes {\n        release {\n            signingConfig signingConfigs.release\n        }", 1)
           p.write_text(s)
           PY
-
       - name: Build installable release APK
         working-directory: android
         run: ./gradlew assembleRelease
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
