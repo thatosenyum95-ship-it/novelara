@@ -12,3 +12,41 @@
 .site-footer{background:#241d24;color:#fff;padding:48px 0 24px}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}.footer-brand{color:#fff}.site-footer p{color:#bdb2b7;font-size:12px}.site-footer strong{font-size:12px;display:block;margin-bottom:12px}.site-footer a:not(.brand){display:block;color:#bdb2b7;text-decoration:none;font-size:12px;margin:7px 0}.site-footer a:not(.brand):hover{color:#fff}.copyright{border-top:1px solid #40383d;margin-top:35px;padding-top:18px;color:#8f858a;font-size:10px}
 @media(max-width:850px){.main-nav{gap:13px}.hero-grid{grid-template-columns:1fr;gap:35px}.hero h1{font-size:48px}.hero-card{display:none}.book-grid{grid-template-columns:repeat(2,1fr)}.genre-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}}
 @media(max-width:560px){.container{width:min(100% - 28px,1120px)}.site-header{height:64px}.header-inner{gap:15px}.main-nav{display:none}.header-search{margin-left:auto}.hero{padding:52px 0 60px}.hero h1{font-size:42px}.section{padding:52px 0}.section-heading h2{font-size:32px}.book-grid{gap:14px}.cover{height:245px}.cover strong{font-size:20px}.genre-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.footer-grid>div:first-child{grid-column:auto}}
+
+
+/* Theme system */
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#f3e9ed;--muted:#b9aab0;--cream:#211a1e;--line:#403239;--soft:#302228;--white:#171215;
+}
+html[data-theme="dark"] body{background:var(--white);color:var(--ink)}
+html[data-theme="dark"] .site-header{background:#171215}
+html[data-theme="dark"] .hero{background:linear-gradient(115deg,#241b20 0%,#171215 58%,#2a1b21 100%)}
+html[data-theme="dark"] .btn-ghost,.theme-toggle{background:#241b20;color:var(--ink)}
+html[data-theme="dark"] .ad-placeholder{border-color:#4a3b41;color:#8f7f86}
+html[data-theme="dark"] .soft{background:var(--cream)}
+html[data-theme="dark"] .genre-grid a{background:#1d171a}
+html[data-theme="dark"] .site-footer{background:#0f0c0e}
+html[data-theme="dark"] .catalog-head h1,
+html[data-theme="dark"] .novel-info h1,
+html[data-theme="dark"] .panel h2,
+html[data-theme="dark"] .chapter-heading h1,
+html[data-theme="dark"] .head h1{color:var(--ink)!important}
+html[data-theme="dark"] .filters,
+html[data-theme="dark"] .novel-card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .reader-ad,
+html[data-theme="dark"] .bottom-nav a,
+html[data-theme="dark"] .nav-btn,
+html[data-theme="dark"] .tool-btn,
+html[data-theme="dark"] .btn-secondary,
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select{background:#21191d!important;color:var(--ink)!important;border-color:#45363c!important}
+html[data-theme="dark"] .search-box input{background:#21191d!important;color:var(--ink)!important}
+html[data-theme="dark"] .chapter,
+html[data-theme="dark"] .bookmark-card{background:#21191d!important;color:var(--ink)!important}
+html[data-theme="dark"] body{background:#171215}
+.theme-toggle{margin-left:8px;border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:var(--ink);font:700 11px Manrope,system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+@media(max-width:560px){.theme-toggle{padding:7px 9px;font-size:10px}}
