@@ -73,7 +73,7 @@
 
     <section class="novel-hero"><div class="novel-cover"><small>Novelara</small><h2>Novel</h2><span>Memuat...</span></div><div class="novel-info"><h1>Memuat novel...</h1><p class="author">oleh <strong>Novelara</strong></p><div class="tags"></div><div class="meta-row"></div><div class="actions"><a class="btn btn-primary" href="#chapters">Mulai Membaca</a><button class="btn btn-secondary" type="button" id="bookmarkBtn">♡ Tambah Bookmark</button></div></div></section>
 
-    <div class="ad-box">AREA IKLAN — DIATUR DARI ADMIN</div>
+    <div class="ad-box" data-ad-position="novel_detail">AREA IKLAN — DIATUR DARI ADMIN</div>
 
     <section class="content-grid">
       <div>
@@ -113,11 +113,12 @@
 })();
 </script>
 <script type="module">
-import { getPublishedNovels, getNovelBySlug, bookmarkNovel, isBookmarked, escapeHtml } from './assets/js/reader.js';
+import { getNovelBySlug, bookmarkNovel, isBookmarked, escapeHtml, renderAd } from './assets/js/reader.js';
 const params=new URLSearchParams(location.search);
 let slug=params.get('slug')||'hujan-di-bulan-juni';
 try{
  const novel=await getNovelBySlug(slug);
+ renderAd(document.querySelector('[data-ad-position="novel_detail"]'),'novel_detail');
  if(!novel){location.replace('novels.html');throw new Error('Novel not found');}
  document.title=novel.title+' — Novelara'; window.setNovelSchema(novel);
  document.querySelector('.breadcrumb').innerHTML='<a href="index.html">Beranda</a> / Novel / '+escapeHtml(novel.title);
