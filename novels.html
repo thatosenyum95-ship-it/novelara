@@ -243,5 +243,30 @@
 
     filterNovels();
   </script>
+
+<script type="module">
+import { getPublishedNovels, novelCard, escapeHtml } from './assets/js/reader.js';
+const grid=document.getElementById('novelGrid'), input=document.getElementById('searchInput'), result=document.getElementById('resultText'), empty=document.getElementById('emptyState');
+const buttons=[...document.querySelectorAll('.genre-btn')];
+let novels=[];
+function render(){
+  const q=input.value.trim().toLowerCase();
+  const genre=document.querySelector('.genre-btn.active')?.dataset.genre||'all';
+  const filtered=novels.filter(n=>{
+    const hay=(n.title+' '+(n.author_name||'')).toLowerCase();
+    const gs=(n.novel_genres||[]).map(x=>x.genre?.name).filter(Boolean);
+    return (!q||hay.includes(q))&&(genre==='all'||gs.includes(genre));
+  });
+  grid.innerHTML=filtered.map(novelCard).join('');
+  empty.style.display=filtered.length?'none':'block';
+  result.textContent='Menampilkan '+filtered.length+' novel';
+}
+try{novels=await getPublishedNovels();render();}catch(e){console.error(e);result.textContent='Gagal memuat novel dari Supabase';}
+const newInput=input.cloneNode(true); input.replaceWith(newInput);
+const newBtn=document.getElementById('searchBtn').cloneNode(true); document.getElementById('searchBtn').replaceWith(newBtn);
+const newGenres=buttons.map(b=>{const x=b.cloneNode(true);b.replaceWith(x);return x;});
+newInput.addEventListener('input',render); newBtn.addEventListener('click',render);
+newGenres.forEach(b=>b.addEventListener('click',()=>{newGenres.forEach(x=>x.classList.remove('active'));b.classList.add('active');render();}));
+</script>
 </body>
 </html>
