@@ -6,7 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'www',
   server: {
     url: 'https://novelara.vercel.app',
-    cleartext: false
+    cleartext: false,
+    allowNavigation: ['novelara.vercel.app']
   },
   android: {
     backgroundColor: '#111827'
