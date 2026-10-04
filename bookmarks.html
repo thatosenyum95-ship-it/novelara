@@ -19,4 +19,20 @@
 const list=document.getElementById('list'),empty=document.getElementById('empty');
 function render(){const items=NovelaraBookmarks.get();list.innerHTML='';empty.style.display=items.length?'none':'block';items.forEach(item=>{const el=document.createElement('article');el.className='card';el.innerHTML='<div class="cover">Novelara</div><div class="info"><h2></h2><p></p><div class="actions"><a class="btn" href="'+item.url+'">Baca Novel</a><button class="btn remove">Hapus</button></div></div>';el.querySelector('h2').textContent=item.title;el.querySelector('p').textContent=item.author+' · '+item.genre;el.querySelector('.remove').onclick=()=>{NovelaraBookmarks.toggle(item);render()};list.appendChild(el)})}
 render();
-</script></body></html>
+</script>
+<script type="module">
+import { supabase } from './assets/js/supabase.js';
+import { escapeHtml } from './assets/js/reader.js';
+const list=document.getElementById('list'), empty=document.getElementById('empty');
+async function load(){
+ const {data:{user}}=await supabase.auth.getUser();
+ if(!user){list.innerHTML='';empty.style.display='block';empty.innerHTML='<strong>Login untuk melihat bookmark</strong>Bookmark tersimpan di akunmu dan dapat dibuka dari perangkat mana pun.';return;}
+ const {data,error}=await supabase.from('bookmarks').select('created_at,novel:novels(id,title,slug,author_name)').eq('user_id',user.id).order('created_at',{ascending:false});
+ if(error){console.error(error);return;}
+ empty.style.display=data?.length?'none':'block';
+ list.innerHTML=(data||[]).map(x=>'<article class="card"><div class="cover">Novelara</div><div class="info"><h2>'+escapeHtml(x.novel?.title||'Novel')+'</h2><p>'+escapeHtml(x.novel?.author_name||'Novelara')+'</p><div class="actions"><a class="btn" href="novel.html?slug='+encodeURIComponent(x.novel?.slug||'')+'">Baca Novel</a><button class="btn remove" data-id="'+x.novel.id+'">Hapus</button></div></div></article>').join('');
+ list.querySelectorAll('.remove').forEach(btn=>btn.addEventListener('click',async()=>{await supabase.from('bookmarks').delete().eq('user_id',user.id).eq('novel_id',btn.dataset.id);load();}));
+}
+load();
+</script>
+</body></html>
