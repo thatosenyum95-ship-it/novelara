@@ -119,5 +119,18 @@
     </div>
     <div class="container copyright">© 2026 Novelara. Semua hak dilindungi.</div>
   </footer>
+
+<script type="module">
+import { getPublishedNovels, escapeHtml } from './assets/js/reader.js';
+try{
+ const novels=await getPublishedNovels();
+ const popular=[...novels].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,4);
+ const grid=document.querySelector('.book-grid');
+ if(grid) grid.innerHTML=popular.map((n,i)=>'<article class="book-card"><a href="novel.html?slug='+encodeURIComponent(n.slug)+'"><div class="cover cover-'+((i%4)+1)+'"><span>0'+(i+1)+'</span><strong>'+escapeHtml(n.title)+'</strong></div></a><div class="book-info"><span class="tag">'+escapeHtml(n.novel_genres?.[0]?.genre?.name||'Novel')+'</span><h3>'+escapeHtml(n.title)+'</h3><p>Novelara</p></div></article>').join('');
+ const latest=[...novels].sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,3);
+ const latestGrid=document.querySelector('.chapter-list');
+ if(latestGrid) latestGrid.innerHTML=latest.map((n,i)=>'<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" class="chapter-item"><span class="chapter-number">0'+(i+1)+'</span><div><h3>'+escapeHtml(n.title)+'</h3><p>Novel tersedia untuk dibaca</p></div><time>Baru</time></a>').join('');
+}catch(e){console.error(e);}
+</script>
 </body>
 </html>
