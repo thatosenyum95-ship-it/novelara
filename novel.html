@@ -148,5 +148,31 @@
       url:'novel.html'
     });
   </script>
+
+<script type="module">
+import { getPublishedNovels, getNovelBySlug, bookmarkNovel, isBookmarked, escapeHtml } from './assets/js/reader.js';
+const params=new URLSearchParams(location.search);
+let slug=params.get('slug')||'hujan-di-bulan-juni';
+try{
+ const novel=await getNovelBySlug(slug);
+ if(!novel){location.replace('novels.html');throw new Error('Novel not found');}
+ document.title=novel.title+' — Novelara';
+ document.querySelector('.breadcrumb').innerHTML='<a href="index.html">Beranda</a> / Novel / '+escapeHtml(novel.title);
+ document.querySelector('.novel-cover h2').innerHTML=escapeHtml(novel.title).replace(/ /g,'<br>');
+ document.querySelector('.novel-cover span').textContent=(novel.novel_genres||[]).map(x=>x.genre?.name).filter(Boolean).slice(0,2).join(' · ');
+ document.querySelector('.novel-info h1').textContent=novel.title;
+ document.querySelector('.novel-info .author strong').textContent=novel.author_name||'Novelara';
+ document.querySelector('.tags').innerHTML=(novel.novel_genres||[]).map(x=>x.genre).filter(Boolean).map(g=>'<span class="tag">'+escapeHtml(g.name)+'</span>').join('');
+ document.querySelector('.meta-row').innerHTML='<span>★ Novelara</span><span>'+(novel.views||0)+' pembaca</span><span>'+novel.chapters.length+' chapter</span>';
+ document.querySelector('.synopsis').textContent=novel.synopsis||'Belum ada sinopsis.';
+ const list=document.querySelector('.chapter-list');
+ list.innerHTML=novel.chapters.map(ch=>'<a class="chapter" href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+ch.chapter_number+'"><div><strong>Bab '+ch.chapter_number+' — '+escapeHtml(ch.title)+'</strong><small>'+new Date(ch.published_at||Date.now()).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+'</small></div><span class="chapter-status">Baca</span></a>').join('');
+ const old=document.getElementById('bookmarkBtn'); const btn=old.cloneNode(true); old.replaceWith(btn);
+ async function sync(){btn.textContent=await isBookmarked(novel.id)?'♥ Tersimpan':'♡ Tambah Bookmark';}
+ await sync();
+ btn.addEventListener('click',async()=>{const r=await bookmarkNovel(novel);if(r.requiresLogin){alert('Silakan login untuk menyimpan bookmark.');return;}await sync();});
+ const read=document.querySelector('.btn-primary'); read.href=novel.chapters[0]?'chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter=1':'#';
+}catch(e){console.error(e);}
+</script>
 </body>
 </html>
