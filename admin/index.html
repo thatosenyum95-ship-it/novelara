@@ -69,9 +69,23 @@ async function editNovel(id){
    id?supabase.from('novels').select('*').eq('id',id).single():Promise.resolve({data:{title:'',slug:'',author_name:'',cover_url:'',status:'draft',scheduled_at:'',synopsis:'',published_at:null},error:null}),
    supabase.from('genres').select('id,name').order('name')
  ]); if(error)throw error;
- modal(id?'Edit Novel':'Tambah Novel', '<label>Judul<input name="title" required value="'+esc(n.title)+'"></label><label>Slug<input name="slug" required value="'+esc(n.slug)+'"></label><label>Penulis<input name="author_name" value="'+esc(n.author_name||'')+'"></label><label>Cover URL<input name="cover_url" value="'+esc(n.cover_url||'')+'"></label><label>Status<select name="status"><option>draft</option><option>published</option><option>scheduled</option></select></label><label>Jadwal terbit<input type="datetime-local" name="scheduled_at"></label><label>Sinopsis<textarea name="synopsis" rows="6">'+esc(n.synopsis||'')+'</textarea></label><label>Genre<select name="genre_id"><option value="">— tanpa perubahan —</option>'+genres.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select></label>', async fd=>{
-   const payload={title:fd.get('title'),slug:fd.get('slug'),author_name:fd.get('author_name')||null,cover_url:fd.get('cover_url')||null,synopsis:fd.get('synopsis')||null,status:fd.get('status'),scheduled_at:fd.get('scheduled_at')?new Date(fd.get('scheduled_at')).toISOString():null,published_at:fd.get('status')==='published'?(n.published_at||new Date().toISOString()):null};
-   const q=id?supabase.from('novels').update(payload).eq('id',id):supabase.from('novels').insert(payload); const {error}=await q; if(error)throw error;
+ modal(id?'Edit Novel':'Tambah Novel', '<label>Judul<input name="title" required value="'+esc(n.title)+'"></label><label>Slug<input name="slug" required value="'+esc(n.slug)+'"></label><label>Penulis<input name="author_name" value="'+esc(n.author_name||'')+'"></label><label>Cover Novel<input type="file" name="cover_file" accept="image/jpeg,image/png,image/webp,image/gif"><small style="display:block;margin-top:6px;color:#71717a">JPG, PNG, WebP, atau GIF · maksimal 5 MB</small>'+(n.cover_url?'<img src="'+esc(n.cover_url)+'" alt="Cover saat ini" style="display:block;width:110px;height:150px;object-fit:cover;border-radius:10px;margin-top:10px">':'')+'</label><label>Status<select name="status"><option>draft</option><option>published</option><option>scheduled</option></select></label><label>Jadwal terbit<input type="datetime-local" name="scheduled_at"></label><label>Sinopsis<textarea name="synopsis" rows="6">'+esc(n.synopsis||'')+'</textarea></label><label>Genre<select name="genre_id"><option value="">— tanpa perubahan —</option>'+genres.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select></label>', async fd=>{
+   const file=fd.get('cover_file');
+   const payload={title:fd.get('title'),slug:fd.get('slug'),author_name:fd.get('author_name')||null,cover_url:n.cover_url||null,synopsis:fd.get('synopsis')||null,status:fd.get('status'),scheduled_at:fd.get('scheduled_at')?new Date(fd.get('scheduled_at')).toISOString():null,published_at:fd.get('status')==='published'?(n.published_at||new Date().toISOString()):null};
+   let novelId=id;
+   if(id){const {error}=await supabase.from('novels').update(payload).eq('id',id);if(error)throw error}
+   else{const {data:created,error}=await supabase.from('novels').insert(payload).select('id').single();if(error)throw error;novelId=created.id}
+   if(file&&file.size){
+     if(!file.type.startsWith('image/'))throw new Error('Cover harus berupa gambar.');
+     if(file.size>5*1024*1024)throw new Error('Ukuran cover maksimal 5 MB.');
+     const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+     const path=novelId+'/'+Date.now()+'.'+ext;
+     const {error:uploadError}=await supabase.storage.from('novel-covers').upload(path,file,{cacheControl:'31536000',contentType:file.type,upsert:false});
+     if(uploadError)throw uploadError;
+     const {data:urlData}=supabase.storage.from('novel-covers').getPublicUrl(path);
+     const {error:updateError}=await supabase.from('novels').update({cover_url:urlData.publicUrl}).eq('id',novelId);
+     if(updateError)throw updateError;
+   }
    if(fd.get('genre_id')&&id){await supabase.from('novel_genres').delete().eq('novel_id',id);const {error:e}=await supabase.from('novel_genres').insert({novel_id:id,genre_id:fd.get('genre_id')});if(e)throw e}
    toast(id?'Novel diperbarui':'Novel ditambahkan');loadNovels();loadDashboard();
  });
