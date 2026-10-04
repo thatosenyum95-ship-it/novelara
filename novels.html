@@ -68,7 +68,7 @@
         <a href="index.html">Beranda</a>
         <a href="novels.html" aria-current="page">Novel</a>
         <a href="#genre">Genre</a>
-        <a href="#">Bookmark</a>
+        <a href="bookmarks.html">Bookmark</a>
       </nav>
     </div>
   </header>
@@ -155,7 +155,7 @@
 
 <script type="module">
 import { getPublishedNovels, novelCard, escapeHtml, renderAd } from './assets/js/reader.js';
-const grid=document.getElementById('novelGrid'), input=document.getElementById('searchInput'), result=document.getElementById('resultText'), empty=document.getElementById('emptyState');
+const grid=document.getElementById('novelGrid'), input=document.getElementById('searchInput'), result=document.getElementById('resultText'), empty=document.getElementById('emptyState');\nconst initialQuery=new URLSearchParams(location.search).get('q')||''; if(initialQuery) input.value=initialQuery;
 const buttons=[...document.querySelectorAll('.genre-btn')];
 let novels=[];
 function render(){
@@ -174,7 +174,7 @@ try{novels=await getPublishedNovels();render();}catch(e){console.error(e);result
 const newInput=input.cloneNode(true); input.replaceWith(newInput);
 const newBtn=document.getElementById('searchBtn').cloneNode(true); document.getElementById('searchBtn').replaceWith(newBtn);
 const newGenres=buttons.map(b=>{const x=b.cloneNode(true);b.replaceWith(x);return x;});
-newInput.addEventListener('input',render); newBtn.addEventListener('click',render);
+newInput.addEventListener('input',render); newBtn.addEventListener('click',render); newInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();render();}}); if(initialQuery) setTimeout(()=>newInput.focus(),0);
 newGenres.forEach(b=>b.addEventListener('click',()=>{newGenres.forEach(x=>x.classList.remove('active'));b.classList.add('active');render();}));
 </script>
 <script src="assets/js/theme.js"></script>
