@@ -47,14 +47,23 @@ const toast = (msg, ok=true) => { let x=$('#adminToast'); if(!x){x=document.crea
 const modal = (title, body, onSave) => { const wrap=document.createElement('div'); wrap.style='position:fixed;inset:0;background:#0008;z-index:9998;display:grid;place-items:center;padding:20px'; wrap.innerHTML='<div style="background:#fff;color:#18181b;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:24px"><div style="display:flex;justify-content:space-between;gap:16px;align-items:center"><h2>'+title+'</h2><button type="button" data-close>✕</button></div><form data-form>'+body+'<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px"><button type="button" data-close>Batal</button><button type="submit">Simpan</button></div></form></div>'; document.body.appendChild(wrap); $$('[data-close]',wrap).forEach(b=>b.onclick=()=>wrap.remove()); $('[data-form]',wrap).onsubmit=async e=>{e.preventDefault();try{await onSave(new FormData(e.currentTarget));wrap.remove()}catch(err){toast(err.message||'Gagal menyimpan',false)}}; return wrap; };
 
 async function loadDashboard(){
- const [{count:novels},{count:chapters},{count:readers},{data:popular}] = await Promise.all([
-  supabase.from('novels').select('*',{count:'exact',head:true}).eq('status','published'),
-  supabase.from('chapters').select('*',{count:'exact',head:true}).eq('status','published'),
-  supabase.from('profiles').select('*',{count:'exact',head:true}).eq('role','reader'),
-  supabase.from('novels').select('title,views').eq('status','published').order('views',{ascending:false}).limit(5)
- ]);
- const stats=$$('.stats article', $('#dashboard')); if(stats.length>=4){stats[0].querySelector('strong').textContent='—';stats[1].querySelector('strong').textContent=readers??0;stats[2].querySelector('strong').textContent=novels??0;stats[3].querySelector('strong').textContent='—';}
- const box=$('#dashboard .panel .table'); if(box) box.innerHTML=(popular&&popular.length)?'<div class="row head"><span>Novel</span><span>Pembaca</span></div>'+(popular||[]).map(n=>'<div class="row"><span>'+esc(n.title)+'</span><strong>'+Number(n.views||0).toLocaleString('id-ID')+'</strong></div>').join(''):'<p class="muted">Belum ada data.</p>';
+ const {data:metrics,error}=await supabase.rpc('get_dashboard_stats');
+ if(error){ console.error(error); toast('Gagal memuat statistik dashboard',false); return; }
+ const m=metrics||{};
+ const stats=$('.stats article', $('#dashboard'));
+ if(stats.length>=4){
+   stats[0].querySelector('strong').textContent=Number(m.visitors||0).toLocaleString('id-ID');
+   stats[0].querySelector('small').textContent='pengunjung unik';
+   stats[1].querySelector('strong').textContent=Number(m.readers||0).toLocaleString('id-ID');
+   stats[1].querySelector('small').textContent='pembaca unik';
+   stats[2].querySelector('strong').textContent=Number(m.novels||0).toLocaleString('id-ID');
+   stats[2].querySelector('small').textContent='novel publik';
+ }
+ const box=$('#dashboard .panel .table');
+ const popular=Array.isArray(m.popular)?m.popular:[];
+ if(box) box.innerHTML=popular.length
+   ? '<div class="row head"><span>Novel</span><span>Pembaca</span></div>'+popular.map(n=>'<div class="row"><span>'+esc(n.title)+'</span><strong>'+Number(n.views||0).toLocaleString('id-ID')+'</strong></div>').join('')
+   : '<p class="muted">Belum ada data pembacaan.</p>';
 }
 async function loadNovels(){
  const sec=$('#novel'); const {data:novels,error}=await supabase.from('novels').select('id,title,slug,author_name,status,views,published_at,novel_genres(genre:genres(name))').order('created_at',{ascending:false}); if(error) throw error;
