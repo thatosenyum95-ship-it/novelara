@@ -135,6 +135,12 @@
     });
   </script>
 
+<script>
+(function(){
+  const canonical=document.querySelector('link[rel="canonical"]')||document.head.appendChild(Object.assign(document.createElement('link'),{rel:'canonical'}));
+  canonical.href=location.href;
+})();
+</script>
 <script type="module">
 import { getChapter, bookmarkNovel, isBookmarked, escapeHtml } from './assets/js/reader.js';
 const p=new URLSearchParams(location.search), novelSlug=p.get('novel')||'hujan-di-bulan-juni', number=Number(p.get('chapter')||1);
