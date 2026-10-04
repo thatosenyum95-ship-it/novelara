@@ -101,6 +101,17 @@
     });
   </script>
 
+<script type="application/ld+json" id="novelSchema">{}</script>
+<script>
+(function(){
+  const canonical=document.querySelector('link[rel="canonical"]')||document.head.appendChild(Object.assign(document.createElement('link'),{rel:'canonical'}));
+  canonical.href=location.href;
+  window.setNovelSchema=function(n){
+    const data={"@context":"https://schema.org","@type":"Book","name":n.title,"author":{"@type":"Person","name":n.author_name||"Novelara"},"description":n.synopsis||"","url":location.href,"inLanguage":"id"};
+    document.getElementById('novelSchema').textContent=JSON.stringify(data);
+  };
+})();
+</script>
 <script type="module">
 import { getPublishedNovels, getNovelBySlug, bookmarkNovel, isBookmarked, escapeHtml } from './assets/js/reader.js';
 const params=new URLSearchParams(location.search);
@@ -108,7 +119,7 @@ let slug=params.get('slug')||'hujan-di-bulan-juni';
 try{
  const novel=await getNovelBySlug(slug);
  if(!novel){location.replace('novels.html');throw new Error('Novel not found');}
- document.title=novel.title+' — Novelara';
+ document.title=novel.title+' — Novelara'; window.setNovelSchema(novel);
  document.querySelector('.breadcrumb').innerHTML='<a href="index.html">Beranda</a> / Novel / '+escapeHtml(novel.title);
  document.querySelector('.novel-cover h2').innerHTML=escapeHtml(novel.title).replace(/ /g,'<br>');
  document.querySelector('.novel-cover span').textContent=(novel.novel_genres||[]).map(x=>x.genre?.name).filter(Boolean).slice(0,2).join(' · ');
