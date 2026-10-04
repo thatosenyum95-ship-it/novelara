@@ -34,4 +34,80 @@ function showSection(id){const valid=sections.some(s=>s.id===id)?id:'dashboard';
 function route(){showSection(location.hash.replace('#','')||'dashboard');} window.addEventListener('hashchange',route);route();
 document.getElementById('logoutBtn').addEventListener('click',async()=>{await supabase.auth.signOut();location.replace('login.html');});
 </script>
+
+<script type="module">
+import { supabase } from '../assets/js/supabase.js';
+
+const $ = (s, r=document) => r.querySelector(s);
+const $ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = (v='') => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slugify = v => v.toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const toast = (msg, ok=true) => { let x=$('#adminToast'); if(!x){x=document.createElement('div');x.id='adminToast';x.style='position:fixed;right:20px;bottom:20px;z-index:9999;padding:12px 16px;border-radius:12px;background:#18181b;color:#fff;box-shadow:0 10px 30px #0002';document.body.appendChild(x)} x.textContent=msg;x.style.background=ok?'#18181b':'#991b1b';setTimeout(()=>x.remove(),2600); };
+const modal = (title, body, onSave) => { const wrap=document.createElement('div'); wrap.style='position:fixed;inset:0;background:#0008;z-index:9998;display:grid;place-items:center;padding:20px'; wrap.innerHTML='<div style="background:#fff;color:#18181b;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:24px"><div style="display:flex;justify-content:space-between;gap:16px;align-items:center"><h2>'+title+'</h2><button type="button" data-close>✕</button></div><form data-form>'+body+'<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px"><button type="button" data-close>Batal</button><button type="submit">Simpan</button></div></form></div>'; document.body.appendChild(wrap); $('[data-close]',wrap).forEach(b=>b.onclick=()=>wrap.remove()); $('[data-form]',wrap).onsubmit=async e=>{e.preventDefault();try{await onSave(new FormData(e.currentTarget));wrap.remove()}catch(err){toast(err.message||'Gagal menyimpan',false)}}; return wrap; };
+
+async function loadDashboard(){
+ const [{count:novels},{count:chapters},{count:users},{data:popular}] = await Promise.all([
+  supabase.from('novels').select('*',{count:'exact',head:true}).eq('status','published'),
+  supabase.from('chapters').select('*',{count:'exact',head:true}).eq('status','published'),
+  supabase.from('profiles').select('*',{count:'exact',head:true}),
+  supabase.from('novels').select('title,views').eq('status','published').order('views',{ascending:false}).limit(5)
+ ]);
+ const stats=$('.stats article', $('#dashboard')); if(stats.length>=4){stats[0].querySelector('strong').textContent='—';stats[1].querySelector('strong').textContent=users??0;stats[2].querySelector('strong').textContent=novels??0;stats[3].querySelector('strong').textContent='—';}
+ const box=$('#dashboard .panel .table'); if(box) box.innerHTML='<div class="row head"><span>Novel</span><span>Pembaca</span></div>'+(popular||[]).map(n=>'<div class="row"><span>'+esc(n.title)+'</span><strong>'+Number(n.views||0).toLocaleString('id-ID')+'</strong></div>').join('')||'<p class="muted">Belum ada data.</p>';
+}
+async function loadNovels(){
+ const sec=$('#novel'); const {data:novels,error}=await supabase.from('novels').select('id,title,slug,author_name,status,views,published_at,novel_genres(genre:genres(name))').order('created_at',{ascending:false}); if(error) throw error;
+ sec.querySelector('.panel').innerHTML='<div class="table"><div class="row head"><span>Judul</span><span>Penulis</span><span>Status</span><span>Aksi</span></div>'+((novels||[]).map(n=>'<div class="row"><span>'+esc(n.title)+'</span><span>'+esc(n.author_name||'—')+'</span><span class="pill">'+esc(n.status)+'</span><span><button data-edit-novel="'+n.id+'">Edit</button> <button data-del-novel="'+n.id+'">Hapus</button></span></div>').join('')||'<p class="muted">Belum ada novel.</p>')+'</div>';
+ $('[data-edit-novel]',sec).forEach(b=>b.onclick=()=>editNovel(b.dataset.editNovel));
+ $('[data-del-novel]',sec).forEach(b=>b.onclick=async()=>{if(!confirm('Hapus novel ini beserta chapter/genre terkait?'))return;const {error}=await supabase.from('novels').delete().eq('id',b.dataset.delNovel);if(error)throw toast(error.message,false);toast('Novel dihapus');loadNovels();loadDashboard()});
+}
+async function editNovel(id){
+ const [{data:n,error},{data:genres}]=await Promise.all([supabase.from('novels').select('*').eq('id',id).single(),supabase.from('genres').select('id,name').order('name')]); if(error)throw error;
+ modal(id?'Edit Novel':'Tambah Novel', '<label>Judul<input name="title" required value="'+esc(n.title)+'"></label><label>Slug<input name="slug" required value="'+esc(n.slug)+'"></label><label>Penulis<input name="author_name" value="'+esc(n.author_name||'')+'"></label><label>Cover URL<input name="cover_url" value="'+esc(n.cover_url||'')+'"></label><label>Status<select name="status"><option>draft</option><option>published</option><option>scheduled</option></select></label><label>Jadwal terbit<input type="datetime-local" name="scheduled_at"></label><label>Sinopsis<textarea name="synopsis" rows="6">'+esc(n.synopsis||'')+'</textarea></label><label>Genre<select name="genre_id"><option value="">— tanpa perubahan —</option>'+genres.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select></label>', async fd=>{
+   const payload={title:fd.get('title'),slug:fd.get('slug'),author_name:fd.get('author_name')||null,cover_url:fd.get('cover_url')||null,synopsis:fd.get('synopsis')||null,status:fd.get('status'),scheduled_at:fd.get('scheduled_at')?new Date(fd.get('scheduled_at')).toISOString():null,published_at:fd.get('status')==='published'?(n.published_at||new Date().toISOString()):null};
+   const q=id?supabase.from('novels').update(payload).eq('id',id):supabase.from('novels').insert(payload); const {error}=await q; if(error)throw error;
+   if(fd.get('genre_id')&&id){await supabase.from('novel_genres').delete().eq('novel_id',id);const {error:e}=await supabase.from('novel_genres').insert({novel_id:id,genre_id:fd.get('genre_id')});if(e)throw e}
+   toast(id?'Novel diperbarui':'Novel ditambahkan');loadNovels();loadDashboard();
+ });
+ const status=$('select[name=status]',document); if(status)status.value=n.status;
+}
+async function loadChapters(){
+ const sec=$('#chapter');const {data,error}=await supabase.from('chapters').select('id,novel_id,chapter_number,title,status,published_at,novels(title)').order('created_at',{ascending:false});if(error)throw error;
+ sec.querySelector('.panel').innerHTML='<div class="table"><div class="row head"><span>Novel</span><span>Chapter</span><span>Status</span><span>Aksi</span></div>'+((data||[]).map(c=>'<div class="row"><span>'+esc(c.novels?.title||'—')+'</span><span>Bab '+c.chapter_number+' — '+esc(c.title)+'</span><span class="pill">'+esc(c.status)+'</span><span><button data-edit-chapter="'+c.id+'">Edit</button> <button data-del-chapter="'+c.id+'">Hapus</button></span></div>').join('')||'<p class="muted">Belum ada chapter.</p>')+'</div>';
+ $('[data-edit-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(b.dataset.editChapter));
+ $('[data-del-chapter]',sec).forEach(b=>b.onclick=async()=>{if(!confirm('Hapus chapter ini?'))return;const {error}=await supabase.from('chapters').delete().eq('id',b.dataset.delChapter);if(error)throw toast(error.message,false);toast('Chapter dihapus');loadChapters()});
+}
+async function editChapter(id){
+ const [{data:c,error},{data:novels}]=await Promise.all([id?supabase.from('chapters').select('*').eq('id',id).single():Promise.resolve({data:{chapter_number:1,title:'',content:'',status:'draft',novel_id:''}}),supabase.from('novels').select('id,title').order('title')]);if(error)throw error;
+ modal(id?'Edit Chapter':'Tulis Chapter','<label>Novel<select name="novel_id" required>'+novels.map(n=>'<option value="'+n.id+'">'+esc(n.title)+'</option>').join('')+'</select></label><label>Nomor Chapter<input name="chapter_number" type="number" min="1" required value="'+c.chapter_number+'"></label><label>Judul<input name="title" required value="'+esc(c.title)+'"></label><label>Status<select name="status"><option>draft</option><option>published</option><option>scheduled</option></select></label><label>Isi Chapter<textarea name="content" rows="14" required>'+esc(c.content||'')+'</textarea></label>',async fd=>{const payload={novel_id:fd.get('novel_id'),chapter_number:Number(fd.get('chapter_number')),title:fd.get('title'),content:fd.get('content'),status:fd.get('status'),published_at:fd.get('status')==='published'?(c.published_at||new Date().toISOString()):null};const {error}=id?await supabase.from('chapters').update(payload).eq('id',id):await supabase.from('chapters').insert(payload);if(error)throw error;toast(id?'Chapter diperbarui':'Chapter ditambahkan');loadChapters();});
+ const ns=$('select[name=novel_id]',document); if(ns)ns.value=c.novel_id; const st=$('select[name=status]',document);if(st)st.value=c.status;
+}
+async function loadGenres(){
+ let sec=$('#novel'); let box=$('#genreManager'); if(!box){box=document.createElement('div');box.id='genreManager';box.className='panel';sec.appendChild(box)}
+ const {data}=await supabase.from('genres').select('*').order('name');box.innerHTML='<h2>Genre</h2><button id="addGenre">+ Tambah Genre</button><div class="table" style="margin-top:12px">'+(data||[]).map(g=>'<div class="row"><span>'+esc(g.name)+'</span><span>'+esc(g.slug)+'</span><span><button data-del-genre="'+g.id+'">Hapus</button></span></div>').join('')+'</div>';
+ $('#addGenre').onclick=()=>modal('Tambah Genre','<label>Nama Genre<input name="name" required></label>',async fd=>{const {error}=await supabase.from('genres').insert({name:fd.get('name'),slug:slugify(fd.get('name'))});if(error)throw error;toast('Genre ditambahkan');loadGenres()});
+ $('[data-del-genre]',box).forEach(b=>b.onclick=async()=>{if(!confirm('Hapus genre?'))return;const {error}=await supabase.from('genres').delete().eq('id',b.dataset.delGenre);if(error)throw toast(error.message,false);toast('Genre dihapus');loadGenres()});
+}
+async function loadAds(){
+ const {data,error}=await supabase.from('ad_settings').select('*').order('created_at');if(error)throw error;const sec=$('#monetisasi');sec.querySelector('.form-grid').innerHTML='<div class="panel"><h2>Posisi iklan</h2>'+data.map(a=>'<label class="switch-row">'+esc(a.name)+' <input type="checkbox" data-ad-enabled="'+a.id+'" '+(a.enabled?'checked':'')+'></label>').join('')+'</div><div class="panel"><h2>Ad code</h2><select id="adSelect">'+data.map(a=>'<option value="'+a.id+'">'+esc(a.name)+'</option>').join('')+'</select><textarea id="adCode" rows="9"></textarea><button id="saveAd" type="button">Simpan Pengaturan Iklan</button></div>';
+ const select=$('#adSelect'),code=$('#adCode');const sync=()=>{const a=data.find(x=>x.id===select.value);code.value=a?.ad_code||''};select.onchange=sync;sync();
+ $('[data-ad-enabled]',sec).forEach(i=>i.onchange=async()=>{const {error}=await supabase.from('ad_settings').update({enabled:i.checked}).eq('id',i.dataset.adEnabled);if(error)toast(error.message,false);else toast('Status iklan diperbarui')});
+ $('#saveAd').onclick=async()=>{const {error}=await supabase.from('ad_settings').update({ad_code:code.value}).eq('id',select.value);if(error)toast(error.message,false);else toast('Ad code disimpan')};
+}
+async function loadSettings(){
+ const {data,error}=await supabase.from('site_settings').select('*').order('key');if(error)throw error;const values=Object.fromEntries((data||[]).map(x=>[x.key,x.value||'']);const sec=$('#pengaturan');
+ sec.querySelector('.settings-grid').innerHTML=['site_name','tagline','logo_url','seo_description','about','contact'].map(k=>'<label>'+k.replaceAll('_',' ')+'<textarea name="'+k+'" rows="'+(k==='seo_description'||k==='about'||k==='contact'?4:1)+'">'+esc(values[k]||'')+'</textarea></label>').join('')+'<button id="saveSettings" type="button">Simpan Pengaturan</button>';
+ $('#saveSettings').onclick=async()=>{for(const k of ['site_name','tagline','logo_url','seo_description','about','contact']){const val=$('[name="'+k+'"]',sec).value;const {error}=await supabase.from('site_settings').upsert({key:k,value:val},{onConflict:'key'});if(error)throw toast(error.message,false)}toast('Pengaturan disimpan')};
+}
+async function loadUsers(){
+ const sec=$('#users')||(()=>{const s=document.createElement('section');s.className='admin-section';s.id='users';s.innerHTML='<header><div><p class="eyebrow">AKUN</p><h1>Pengguna</h1><p class="muted">Kelola role akun Novelara.</p></div></header><div class="panel"></div>';$('.admin-main').appendChild(s);return s})();
+ const {data,error}=await supabase.from('profiles').select('id,display_name,role,created_at').order('created_at',{ascending:false});if(error)throw error;sec.querySelector('.panel').innerHTML='<div class="table"><div class="row head"><span>Nama</span><span>Role</span><span>Dibuat</span><span>Aksi</span></div>'+data.map(u=>'<div class="row"><span>'+esc(u.display_name||'Tanpa nama')+'</span><span>'+esc(u.role)+'</span><span>'+new Date(u.created_at).toLocaleDateString('id-ID')+'</span><span><select data-role="'+u.id+'"><option value="reader">reader</option><option value="admin">admin</option></select></span></div>').join('')+'</div>';$('[data-role]',sec).forEach(s=>{s.value=data.find(u=>u.id===s.dataset.role).role;s.onchange=async()=>{if(s.dataset.role==='6239b716-8b6e-4dca-af5f-d69e2f109368'&&s.value!=='admin'){s.value='admin';return toast('Akun admin utama tidak boleh diturunkan.',false)}const {error}=await supabase.from('profiles').update({role:s.value}).eq('id',s.dataset.role);if(error)toast(error.message,false);else toast('Role diperbarui')}})
+}
+const nav=$('#adminNav');if(nav&&!$('#usersLink')){const a=document.createElement('a');a.id='usersLink';a.href='#users';a.dataset.section='users';a.textContent='Pengguna';nav.appendChild(a)}
+const originalRoute = window.route;
+async function refreshAll(){try{await Promise.all([loadDashboard(),loadNovels(),loadChapters(),loadGenres(),loadAds(),loadSettings(),loadUsers()])}catch(e){console.error(e);toast(e.message||'Gagal memuat data Admin',false)}}
+document.addEventListener('click',e=>{if(e.target.matches('#novel header button'))editNovel(null);if(e.target.matches('#chapter header button'))editChapter(null)});
+window.addEventListener('hashchange',()=>{if(location.hash==='#users'){ $('.admin-section').forEach(s=>s.classList.toggle('active-section',s.id==='users'));$('#adminNav a').forEach(a=>a.classList.toggle('active',a.dataset.section==='users')) }});
+await refreshAll();
+</script>
 </body></html>
