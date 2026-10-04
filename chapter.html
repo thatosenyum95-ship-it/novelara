@@ -142,7 +142,7 @@
 })();
 </script>
 <script type="module">
-import { getChapter, bookmarkNovel, isBookmarked, escapeHtml, renderAd } from './assets/js/reader.js';
+import { getChapter, escapeHtml, renderAd } from './assets/js/reader.js';
 const p=new URLSearchParams(location.search), novelSlug=p.get('novel')||'hujan-di-bulan-juni', number=Number(p.get('chapter')||1);
 try{
  const result=await getChapter(novelSlug,number);
@@ -164,8 +164,9 @@ try{
  if(next) bottom.insertAdjacentHTML('beforeend','<a href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+next.chapter_number+'"><small>CHAPTER BERIKUTNYA</small><strong>Bab '+next.chapter_number+' — '+escapeHtml(next.title)+' →</strong></a>');
  else bottom.insertAdjacentHTML('beforeend','<a href="novel.html?slug='+encodeURIComponent(novel.slug)+'"><small>NOVEL</small><strong>Selesai membaca →</strong></a>');
  const old=document.getElementById('bookmarkBtn'), btn=old.cloneNode(true); old.replaceWith(btn);
- async function sync(){btn.textContent=await isBookmarked(novel.id)?'♥ Tersimpan':'♡ Bookmark';}
- await sync(); btn.addEventListener('click',async()=>{const r=await bookmarkNovel(novel);if(r.requiresLogin){alert('Silakan login untuk menyimpan bookmark.');return;}await sync();});
+ const bookmarkItem={id:novel.id,title:novel.title,author:novel.author_name||'Novelara',genre:(novel.novel_genres||[]).map(x=>x.genre?.name).filter(Boolean).join(', ')||'Novel',url:'novel.html?slug='+encodeURIComponent(novel.slug)};
+ const sync=()=>{const saved=NovelaraBookmarks.has(novel.id);btn.textContent=saved?'♥ Tersimpan':'♡ Bookmark';btn.dataset.saved=saved?'true':'false'};
+ sync(); btn.addEventListener('click',()=>{NovelaraBookmarks.toggle(bookmarkItem);sync();});
 }catch(e){console.error(e);}
 </script>
 <script src="assets/js/theme.js"></script>
