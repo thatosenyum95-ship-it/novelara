@@ -63,7 +63,10 @@ async function loadNovels(){
  $('[data-del-novel]',sec).forEach(b=>b.onclick=async()=>{if(!confirm('Hapus novel ini beserta chapter/genre terkait?'))return;const {error}=await supabase.from('novels').delete().eq('id',b.dataset.delNovel);if(error){toast(error.message,false);return}toast('Novel dihapus');loadNovels();loadDashboard()});
 }
 async function editNovel(id){
- const [{data:n,error},{data:genres}]=await Promise.all([supabase.from('novels').select('*').eq('id',id).single(),supabase.from('genres').select('id,name').order('name')]); if(error)throw error;
+ const [{data:n,error},{data:genres}]=await Promise.all([
+   id?supabase.from('novels').select('*').eq('id',id).single():Promise.resolve({data:{title:'',slug:'',author_name:'',cover_url:'',status:'draft',scheduled_at:'',synopsis:'',published_at:null},error:null}),
+   supabase.from('genres').select('id,name').order('name')
+ ]); if(error)throw error;
  modal(id?'Edit Novel':'Tambah Novel', '<label>Judul<input name="title" required value="'+esc(n.title)+'"></label><label>Slug<input name="slug" required value="'+esc(n.slug)+'"></label><label>Penulis<input name="author_name" value="'+esc(n.author_name||'')+'"></label><label>Cover URL<input name="cover_url" value="'+esc(n.cover_url||'')+'"></label><label>Status<select name="status"><option>draft</option><option>published</option><option>scheduled</option></select></label><label>Jadwal terbit<input type="datetime-local" name="scheduled_at"></label><label>Sinopsis<textarea name="synopsis" rows="6">'+esc(n.synopsis||'')+'</textarea></label><label>Genre<select name="genre_id"><option value="">— tanpa perubahan —</option>'+genres.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join('')+'</select></label>', async fd=>{
    const payload={title:fd.get('title'),slug:fd.get('slug'),author_name:fd.get('author_name')||null,cover_url:fd.get('cover_url')||null,synopsis:fd.get('synopsis')||null,status:fd.get('status'),scheduled_at:fd.get('scheduled_at')?new Date(fd.get('scheduled_at')).toISOString():null,published_at:fd.get('status')==='published'?(n.published_at||new Date().toISOString()):null};
    const q=id?supabase.from('novels').update(payload).eq('id',id):supabase.from('novels').insert(payload); const {error}=await q; if(error)throw error;
