@@ -22,7 +22,15 @@
     .chapter-heading h1 { margin:10px 0 8px; font:400 clamp(2.3rem,6vw,4rem)/1.05 "DM Serif Display",serif; color:#39282d; }
     .chapter-heading p { margin:0; color:#958387; font-size:.88rem; }
     .reader-content { font:400 1.08rem/2 "DM Serif Display", Georgia, serif; color:#443438; }
-    html.dark .reader-content, body.dark .reader-content { color:#f4eef1 !important; }
+    html[data-theme="dark"] .reader-content, html[data-theme="dark"] body .reader-content { color:#fff !important; }
+    html[data-theme="dark"] .reader-content p { color:#fff !important; }
+    html[data-theme="dark"] .chapter-heading h1 { color:#fff !important; }
+    html[data-theme="dark"] .chapter-heading p { color:#e1d6db !important; }
+    html[data-theme="dark"] .back-link { color:#ffd0da !important; }
+    html[data-theme="dark"] .nav-btn, html[data-theme="dark"] .tool-btn { color:#fff !important; background:#443d43 !important; border-color:#6a5d64 !important; }
+    html[data-theme="dark"] .reader-ad { color:#e1d6db !important; background:#443d43 !important; border-color:#6a5d64 !important; }
+    html[data-theme="dark"] .bottom-nav a { color:#fff !important; background:#443d43 !important; border-color:#6a5d64 !important; }
+    html[data-theme="dark"] .bottom-nav small { color:#e1d6db !important; }
     html.dark .reader-content p, body.dark .reader-content p { color:#f4eef1 !important; }
     html.dark .chapter-heading h1, body.dark .chapter-heading h1 { color:#fff !important; }
     html.dark .chapter-heading p, body.dark .chapter-heading p { color:#d7cbd0 !important; }
