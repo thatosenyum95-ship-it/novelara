@@ -95,8 +95,12 @@ export function escapeHtml(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&
 export function escapeAttr(v=''){return escapeHtml(v);}
 
 export async function bookmarkNovel(novel) {
-  const { data:{user} } = await supabase.auth.getUser();
-  if (!user) return { saved:false, requiresLogin:true };
+  let { data:{user} } = await supabase.auth.getUser();
+  if (!user) {
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error) return { saved:false, requiresLogin:false, error:error.message };
+    user = data.user;
+  }
   const { data:existing } = await supabase.from('bookmarks').select('novel_id').eq('user_id',user.id).eq('novel_id',novel.id).maybeSingle();
   if (existing) {
     const { error }=await supabase.from('bookmarks').delete().eq('user_id',user.id).eq('novel_id',novel.id);
