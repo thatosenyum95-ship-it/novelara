@@ -49,7 +49,7 @@ export function novelCard(n) {
   const tags=genres.slice(0,2).map(g=>'<span class="card-tag">'+escapeHtml(g.name)+'</span>').join('');
   const coverClass=genres[0]?.slug==='office-romance'?'alt1':genres[0]?.slug==='marriage-story'?'alt2':genres[0]?.slug==='teen-romance'?'alt3':'';
   return '<article class="novel-card" data-title="'+escapeAttr(n.title)+'" data-author="'+escapeAttr(n.author_name||'')+'" data-genres="'+escapeAttr(genres.map(g=>g.name).join(','))+'">'+
-    '<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" aria-label="'+escapeAttr(n.title)+'"><div class="cover '+coverClass+'"><small>Novelara Original</small><strong>'+escapeHtml(n.title)+'</strong></div></a>'+
+    '<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" aria-label="'+escapeAttr(n.title)+'"><div class="cover '+coverClass+'"'+(n.cover_url?' style="background-image:url(\''+escapeAttr(n.cover_url)+'\');background-size:cover;background-position:center;"':'')+'><small>Novelara Original</small><strong>'+escapeHtml(n.title)+'</strong></div></a>'+
     '<div class="card-body"><h2>'+escapeHtml(n.title)+'</h2><div class="author">'+escapeHtml(n.author_name||'Novelara')+'</div><div class="card-tags">'+tags+'</div><div class="card-foot"><span>Novel</span><span>'+(n.views||0)+' pembaca</span></div></div></article>';
 }
 
