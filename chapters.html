@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Daftar chapter terbaru Novelara.">
+  <title>Chapter Terbaru — Novelara</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <meta name="robots" content="index,follow">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="index.html"><span class="brand-mark">N</span><span>Novelara</span></a>
+    <nav class="main-nav" aria-label="Navigasi utama">
+      <a href="index.html">Beranda</a>
+      <a href="novels.html">Novel</a>
+      <a href="novels.html#searchInput">Cari</a>
+      <a href="novels.html#genre">Genre</a>
+      <a href="bookmarks.html">Bookmark</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Ganti mode tema">◐</button>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">CHAPTER</span>
+          <h1>Semua Chapter Terbaru</h1>
+          <p class="muted">Chapter yang baru diperbarui dari novel yang sudah dipublikasikan.</p>
+        </div>
+      </div>
+      <div class="chapter-list" id="chapterList"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div><a class="brand footer-brand" href="index.html"><span class="brand-mark">N</span><span>Novelara</span></a><p>Cerita yang menemukan hati.</p></div>
+    <div><strong>Novelara</strong><a href="novels.html">Semua Novel</a><a href="novels.html#searchInput">Pencarian</a><a href="bookmarks.html">Bookmark</a></div>
+    <div><strong>Informasi</strong><a href="#">Tentang Kami</a><a href="#">Kebijakan Privasi</a><a href="#">Syarat &amp; Ketentuan</a></div>
+  </div>
+  <div class="container copyright">© 2026 Novelara. Semua hak dilindungi.</div>
+</footer>
+
+<script type="module">
+import { getLatestChapters, escapeHtml } from './assets/js/reader.js';
+
+const list = document.querySelector('#chapterList');
+
+try {
+  const chapters = await getLatestChapters(100);
+  list.innerHTML = chapters.length
+    ? chapters.map(c => '<a href="chapter.html?novel='+encodeURIComponent(c.novel.slug)+'&chapter='+encodeURIComponent(c.chapter_number)+'" class="chapter-item"><span class="chapter-number">'+String(c.chapter_number).padStart(2,'0')+'</span><div><h2>'+escapeHtml(c.novel.title)+' — '+escapeHtml(c.title)+'</h2><p>Chapter '+escapeHtml(c.chapter_number)+'</p></div><time>Baru diperbarui</time></a>').join('')
+    : '<p class="muted">Tidak ada chapter terbaru.</p>';
+} catch (error) {
+  console.error(error);
+  list.innerHTML = '<p class="muted">Tidak ada chapter terbaru.</p>';
+}
+</script>
+</body>
+</html>
