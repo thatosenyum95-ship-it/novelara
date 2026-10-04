@@ -3,14 +3,15 @@
 <body class="login-page"><main class="login-card">
 <div class="brand-mark">N</div><p class="eyebrow">NOVELARA ADMIN</p><h1>Selamat datang kembali.</h1>
 <p class="muted">Masuk untuk mengelola novel, chapter, iklan, dan pengaturan website.</p>
-<form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin@novelara.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="••••••••"></label><button id="loginBtn" type="submit">Masuk ke Admin</button><p id="loginMessage" class="form-message" role="alert"></p></form>
+<form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin@novelara.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="••••••••"></label><button id="loginBtn" type="submit">Masuk ke Admin</button><button id="forgotBtn" type="button" class="secondary">Lupa Password?</button><p id="loginMessage" class="form-message" role="alert"></p><p id="forgotMessage" class="form-message" role="status"></p></form>
 <a class="back-link" href="../index.html">← Kembali ke Novelara</a>
 </main>
 <script type="module">
 import { supabase } from '../assets/js/supabase.js';
-const form=document.getElementById('loginForm'), btn=document.getElementById('loginBtn'), msg=document.getElementById('loginMessage');
+const form=document.getElementById('loginForm'), btn=document.getElementById('loginBtn'), msg=document.getElementById('loginMessage'), forgotBtn=document.getElementById('forgotBtn'), forgotMessage=document.getElementById('forgotMessage');
 const { data:{session} }=await supabase.auth.getSession();
 if(session){ const {data:profile}=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle(); if(profile?.role==='admin') location.replace('index.html'); else await supabase.auth.signOut(); }
+forgotBtn.addEventListener('click',async()=>{ const email=document.getElementById('email').value.trim(); if(!email){forgotMessage.textContent='Masukkan email Admin terlebih dahulu.';return;} forgotBtn.disabled=true; forgotMessage.textContent='Mengirim link reset…'; const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:`${location.origin}/admin/reset-password.html`}); if(error){forgotMessage.textContent=error.message;forgotBtn.disabled=false;return;} forgotMessage.textContent='Link reset sudah dikirim. Periksa email Admin.'; });
 form.addEventListener('submit',async e=>{
  e.preventDefault(); msg.textContent=''; btn.disabled=true; btn.textContent='Memeriksa…';
  const {data,error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});
