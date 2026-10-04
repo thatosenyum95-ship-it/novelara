@@ -131,6 +131,21 @@ export async function addNovelComment(novelId,content,displayName){
   return data;
 }
 
+export async function trackVisit(eventType='visit', novelId=null, chapterId=null){
+  try{
+    const visitorId=getVisitorId();
+    const {error}=await supabase.from('visit_events').insert({
+      visitor_id:visitorId,
+      event_type:eventType==='read'?'read':'visit',
+      novel_id:novelId||null,
+      chapter_id:chapterId||null,
+      path:location.pathname+location.search
+    });
+    if(error) console.warn('Gagal mencatat kunjungan',error);
+  }catch(error){ console.warn('Gagal mencatat kunjungan',error); }
+}
+trackVisit('visit');
+
 export function novelCard(n) {
   const genres=(n.novel_genres||[]).map(x=>x.genre).filter(Boolean);
   const tags=genres.slice(0,2).map(g=>'<span class="card-tag">'+escapeHtml(g.name)+'</span>').join('');
