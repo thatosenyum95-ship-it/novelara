@@ -113,3 +113,36 @@ html[data-theme="dark"] select,
 html[data-theme="dark"] .chapter,
 html[data-theme="dark"] .bookmark-card,
 html[data-theme="dark"] .search-box input{background:#2a2227!important;color:var(--ink)!important;border-color:#493a41!important}
+
+
+/* Dark mode - brighter charcoal */
+html[data-theme="dark"]{
+  --ink:#f2ebee;
+  --muted:#c6bac0;
+  --cream:#3a3338;
+  --line:#5a4f55;
+  --soft:#464047;
+  --white:#353036;
+}
+html[data-theme="dark"] body{background:#353036;color:var(--ink)}
+html[data-theme="dark"] .site-header{background:#383238}
+html[data-theme="dark"] .hero{background:linear-gradient(115deg,#474047 0%,#353036 58%,#4a3d44 100%)}
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .theme-toggle{background:#464047;color:var(--ink);border-color:#62575d}
+html[data-theme="dark"] .soft{background:#3a3338}
+html[data-theme="dark"] .genre-grid a{background:#40393f}
+html[data-theme="dark"] .filters,
+html[data-theme="dark"] .novel-card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .reader-ad,
+html[data-theme="dark"] .bottom-nav a,
+html[data-theme="dark"] .nav-btn,
+html[data-theme="dark"] .tool-btn,
+html[data-theme="dark"] .btn-secondary,
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select,
+html[data-theme="dark"] .chapter,
+html[data-theme="dark"] .bookmark-card,
+html[data-theme="dark"] .search-box input{background:#443d43!important;color:var(--ink)!important;border-color:#5c5157!important}
