@@ -142,7 +142,7 @@
 })();
 </script>
 <script type="module">
-import { getChapter, escapeHtml, renderAd } from './assets/js/reader.js';
+import { getChapter, escapeHtml, renderAd, trackVisit } from './assets/js/reader.js';
 const p=new URLSearchParams(location.search), novelSlug=p.get('novel')||'hujan-di-bulan-juni', number=Number(p.get('chapter')||1);
 try{
  const result=await getChapter(novelSlug,number);
