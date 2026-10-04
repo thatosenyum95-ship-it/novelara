@@ -44,6 +44,44 @@ export async function getChapter(novelSlug, chapterNumber) {
   return { novel, chapter:data };
 }
 
+export async function getEnabledAds(position) {
+  const { data, error } = await supabase
+    .from('ad_settings')
+    .select('id,name,position,enabled,ad_code')
+    .eq('enabled', true)
+    .eq('position', position)
+    .limit(1);
+  if (error) throw error;
+  return data?.[0] || null;
+}
+
+export async function renderAd(element, position) {
+  if (!element) return;
+  try {
+    const ad = await getEnabledAds(position);
+    if (!ad?.ad_code?.trim()) {
+      element.hidden = true;
+      return;
+    }
+    element.hidden = false;
+    element.innerHTML = '';
+    const template = document.createElement('template');
+    template.innerHTML = ad.ad_code.trim();
+    for (const node of [...template.content.childNodes]) {
+      if (node.nodeName.toLowerCase() !== 'script') element.appendChild(node.cloneNode(true));
+    }
+    for (const oldScript of [...template.content.querySelectorAll('script')]) {
+      const script = document.createElement('script');
+      for (const attr of oldScript.attributes) script.setAttribute(attr.name, attr.value);
+      if (oldScript.textContent) script.textContent = oldScript.textContent;
+      element.appendChild(script);
+    }
+  } catch (error) {
+    console.error('Gagal memuat iklan', position, error);
+    element.hidden = true;
+  }
+}
+
 export function novelCard(n) {
   const genres=(n.novel_genres||[]).map(x=>x.genre).filter(Boolean);
   const tags=genres.slice(0,2).map(g=>'<span class="card-tag">'+escapeHtml(g.name)+'</span>').join('');
