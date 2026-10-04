@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Temukan semua novel di Novelara. Cari berdasarkan judul, penulis, atau genre favoritmu.">
+  <meta name="description" content="Temukan novel Indonesia di Novelara. Cari novel berdasarkan judul, penulis, dan genre.">
   <title>Semua Novel — Novelara</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,6 +54,11 @@
     }
     @media (max-width:400px) { .novel-grid { grid-template-columns:1fr 1fr; } .catalog-meta { align-items:flex-start; flex-direction:column; gap:4px; } }
   </style>
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Semua Novel — Novelara">
+  <meta property="og:description" content="Temukan novel Indonesia di Novelara. Cari novel berdasarkan judul, penulis, dan genre.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Novelara">
 </head>
 <body>
   <header class="site-header">
@@ -82,15 +87,7 @@
         </div>
         <button class="search-btn" id="searchBtn" type="button">Cari Novel</button>
       </div>
-      <div class="genre-row" id="genre">
-        <button class="genre-btn active" data-genre="all" type="button">Semua</button>
-        <button class="genre-btn" data-genre="Romance" type="button">Romance</button>
-        <button class="genre-btn" data-genre="Drama Cinta" type="button">Drama Cinta</button>
-        <button class="genre-btn" data-genre="Second Chance" type="button">Second Chance</button>
-        <button class="genre-btn" data-genre="Teen Romance" type="button">Teen Romance</button>
-        <button class="genre-btn" data-genre="Marriage Story" type="button">Marriage Story</button>
-        <button class="genre-btn" data-genre="Office Romance" type="button">Office Romance</button>
-      </div>
+      <div class="genre-row" id="genre"><button class="genre-btn active" data-genre="all" type="button">Semua</button></div>
     </section>
 
     <div class="catalog-meta">
@@ -98,95 +95,7 @@
       <span>Novel terbaru & terpopuler</span>
     </div>
 
-    <section class="novel-grid" id="novelGrid">
-      <article class="novel-card" data-title="Hujan di Bulan Juni" data-author="Novelara" data-genres="Romance,Drama Cinta,Second Chance">
-        <a href="novel.html" aria-label="Hujan di Bulan Juni">
-          <div class="cover"><small>Novelara Original</small><strong>Hujan di<br>Bulan Juni</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Hujan di Bulan Juni</h2><div class="author">Novelara</div>
-          <div class="card-tags"><span class="card-tag">Romance</span><span class="card-tag">Second Chance</span></div>
-          <div class="card-foot"><span>★ 4.8</span><span>12.4K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="Pesan yang Tak Pernah Terkirim" data-author="Nara Aulia" data-genres="Romance,Drama Cinta">
-        <a href="novel.html" aria-label="Pesan yang Tak Pernah Terkirim">
-          <div class="cover alt1"><small>Romance</small><strong>Pesan yang<br>Tak Pernah<br>Terkirim</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Pesan yang Tak Pernah Terkirim</h2><div class="author">Nara Aulia</div>
-          <div class="card-tags"><span class="card-tag">Romance</span><span class="card-tag">Drama Cinta</span></div>
-          <div class="card-foot"><span>★ 4.7</span><span>9.8K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="Ketika Kita Bertemu Lagi" data-author="Raka Pratama" data-genres="Second Chance,Romance">
-        <a href="novel.html" aria-label="Ketika Kita Bertemu Lagi">
-          <div class="cover alt2"><small>Second Chance</small><strong>Ketika Kita<br>Bertemu Lagi</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Ketika Kita Bertemu Lagi</h2><div class="author">Raka Pratama</div>
-          <div class="card-tags"><span class="card-tag">Second Chance</span><span class="card-tag">Romance</span></div>
-          <div class="card-foot"><span>★ 4.6</span><span>8.1K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="Rumah yang Bernama Kamu" data-author="Alya Maheswari" data-genres="Marriage Story,Drama Cinta">
-        <a href="novel.html" aria-label="Rumah yang Bernama Kamu">
-          <div class="cover alt3"><small>Marriage Story</small><strong>Rumah yang<br>Bernama Kamu</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Rumah yang Bernama Kamu</h2><div class="author">Alya Maheswari</div>
-          <div class="card-tags"><span class="card-tag">Marriage Story</span><span class="card-tag">Drama Cinta</span></div>
-          <div class="card-foot"><span>★ 4.5</span><span>6.7K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="CEO di Balik Meja" data-author="Mira Senja" data-genres="Office Romance,Romance">
-        <a href="novel.html" aria-label="CEO di Balik Meja">
-          <div class="cover alt1"><small>Office Romance</small><strong>CEO di<br>Balik Meja</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>CEO di Balik Meja</h2><div class="author">Mira Senja</div>
-          <div class="card-tags"><span class="card-tag">Office Romance</span><span class="card-tag">Romance</span></div>
-          <div class="card-foot"><span>★ 4.4</span><span>5.9K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="Seragam dan Surat Cinta" data-author="Dinda Kirana" data-genres="Teen Romance,Romance">
-        <a href="novel.html" aria-label="Seragam dan Surat Cinta">
-          <div class="cover alt2"><small>Teen Romance</small><strong>Seragam dan<br>Surat Cinta</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Seragam dan Surat Cinta</h2><div class="author">Dinda Kirana</div>
-          <div class="card-tags"><span class="card-tag">Teen Romance</span><span class="card-tag">Romance</span></div>
-          <div class="card-foot"><span>★ 4.3</span><span>4.8K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="Setelah Kita Menikah" data-author="Rania Putri" data-genres="Marriage Story,Romance">
-        <a href="novel.html" aria-label="Setelah Kita Menikah">
-          <div class="cover"><small>Marriage Story</small><strong>Setelah Kita<br>Menikah</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Setelah Kita Menikah</h2><div class="author">Rania Putri</div>
-          <div class="card-tags"><span class="card-tag">Marriage Story</span><span class="card-tag">Romance</span></div>
-          <div class="card-foot"><span>★ 4.2</span><span>3.9K pembaca</span></div>
-        </div>
-      </article>
-
-      <article class="novel-card" data-title="Kopi di Lantai Dua" data-author="Fajar Aditya" data-genres="Office Romance,Drama Cinta">
-        <a href="novel.html" aria-label="Kopi di Lantai Dua">
-          <div class="cover alt3"><small>Office Romance</small><strong>Kopi di<br>Lantai Dua</strong></div>
-        </a>
-        <div class="card-body">
-          <h2>Kopi di Lantai Dua</h2><div class="author">Fajar Aditya</div>
-          <div class="card-tags"><span class="card-tag">Office Romance</span><span class="card-tag">Drama Cinta</span></div>
-          <div class="card-foot"><span>★ 4.1</span><span>3.2K pembaca</span></div>
-        </div>
-      </article>
-    </section>
+    <section class="novel-grid" id="novelGrid"></section>
 
     <div class="empty" id="emptyState">
       <strong>Novel tidak ditemukan</strong>
