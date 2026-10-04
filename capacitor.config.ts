@@ -1,0 +1,16 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.novelara.app',
+  appName: 'Novelara',
+  webDir: 'www',
+  server: {
+    url: 'https://novelara.vercel.app',
+    cleartext: false
+  },
+  android: {
+    backgroundColor: '#111827'
+  }
+};
+
+export default config;
