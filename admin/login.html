@@ -20,4 +20,5 @@ form.addEventListener('submit',async e=>{
  if(profileError || profile?.role!=='admin'){await supabase.auth.signOut();msg.textContent='Akun ini tidak memiliki akses Admin.';btn.disabled=false;btn.textContent='Masuk ke Admin';return;}
  location.replace('index.html');
 });
-</script></body></html>
+</script><script src="../assets/js/theme.js"></script>
+</body></html>
