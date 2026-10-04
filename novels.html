@@ -268,5 +268,6 @@ const newGenres=buttons.map(b=>{const x=b.cloneNode(true);b.replaceWith(x);retur
 newInput.addEventListener('input',render); newBtn.addEventListener('click',render);
 newGenres.forEach(b=>b.addEventListener('click',()=>{newGenres.forEach(x=>x.classList.remove('active'));b.classList.add('active');render();}));
 </script>
+<script src="assets/js/theme.js"></script>
 </body>
 </html>
