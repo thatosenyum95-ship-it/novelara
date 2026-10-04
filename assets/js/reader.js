@@ -82,6 +82,42 @@ export async function renderAd(element, position) {
   }
 }
 
+function getVisitorId(){
+  const key='novelara_visitor_id';
+  let id=localStorage.getItem(key);
+  if(!id){ id=crypto.randomUUID ? crypto.randomUUID() : 'v_'+Date.now()+'_'+Math.random().toString(36).slice(2); localStorage.setItem(key,id); }
+  return id;
+}
+
+export async function getNovelSocial(novelId){
+  const [{data:likes,error:likeError},{data:comments,error:commentError}]=await Promise.all([
+    supabase.from('novel_likes').select('visitor_id').eq('novel_id',novelId),
+    supabase.from('comments').select('id,content,display_name,created_at').eq('novel_id',novelId).order('created_at',{ascending:false})
+  ]);
+  if(likeError) throw likeError; if(commentError) throw commentError;
+  const visitorId=getVisitorId();
+  return {likeCount:likes?.length||0,liked:!!likes?.some(x=>x.visitor_id===visitorId),comments:comments||[]};
+}
+
+export async function toggleNovelLike(novelId){
+  const visitorId=getVisitorId();
+  const {data:existing,error:checkError}=await supabase.from('novel_likes').select('novel_id').eq('novel_id',novelId).eq('visitor_id',visitorId).maybeSingle();
+  if(checkError) throw checkError;
+  if(existing){ const {error}=await supabase.from('novel_likes').delete().eq('novel_id',novelId).eq('visitor_id',visitorId); if(error) throw error; return false; }
+  const {error}=await supabase.from('novel_likes').insert({novel_id:novelId,visitor_id:visitorId});
+  if(error) throw error;
+  return true;
+}
+
+export async function addNovelComment(novelId,content,displayName){
+  const clean=String(content||'').trim().slice(0,1000);
+  const name=String(displayName||'Pembaca').trim().slice(0,60)||'Pembaca';
+  if(!clean) throw new Error('Komentar masih kosong.');
+  const {data,error}=await supabase.from('comments').insert({novel_id:novelId,user_id:null,content:clean,display_name:name}).select('id,content,display_name,created_at').single();
+  if(error) throw error;
+  return data;
+}
+
 export function novelCard(n) {
   const genres=(n.novel_genres||[]).map(x=>x.genre).filter(Boolean);
   const tags=genres.slice(0,2).map(g=>'<span class="card-tag">'+escapeHtml(g.name)+'</span>').join('');
