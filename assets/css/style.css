@@ -146,3 +146,25 @@ html[data-theme="dark"] select,
 html[data-theme="dark"] .chapter,
 html[data-theme="dark"] .bookmark-card,
 html[data-theme="dark"] .search-box input{background:#443d43!important;color:var(--ink)!important;border-color:#5c5157!important}
+
+
+/* Dark mode text readability */
+html[data-theme="dark"] .chapter,
+html[data-theme="dark"] .chapter p,
+html[data-theme="dark"] .chapter div,
+html[data-theme="dark"] .chapter span,
+html[data-theme="dark"] .novel-info p,
+html[data-theme="dark"] .synopsis,
+html[data-theme="dark"] .comment-list,
+html[data-theme="dark"] .comment-item,
+html[data-theme="dark"] .bookmark-card,
+html[data-theme="dark"] .book-info,
+html[data-theme="dark"] .book-info p,
+html[data-theme="dark"] .chapter-item p{color:#f4eef1!important}
+html[data-theme="dark"] .chapter h1,
+html[data-theme="dark"] .chapter h2,
+html[data-theme="dark"] .chapter h3,
+html[data-theme="dark"] .novel-info h1,
+html[data-theme="dark"] .panel h2{color:#fff!important}
+html[data-theme="dark"] .chapter a,
+html[data-theme="dark"] .novel-info a{color:#ff9bb2}
