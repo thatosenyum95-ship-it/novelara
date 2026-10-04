@@ -95,7 +95,7 @@ async function loadAds(){
  $('#saveAd').onclick=async()=>{const {error}=await supabase.from('ad_settings').update({ad_code:code.value}).eq('id',select.value);if(error)toast(error.message,false);else toast('Ad code disimpan')};
 }
 async function loadSettings(){
- const {data,error}=await supabase.from('site_settings').select('*').order('key');if(error)throw error;const values=Object.fromEntries((data||[]).map(x=>[x.key,x.value||'']);const sec=$('#pengaturan');
+ const {data,error}=await supabase.from('site_settings').select('*').order('key');if(error)throw error;const values=Object.fromEntries((data||[]).map(x=>[x.key,x.value||'']));const sec=$('#pengaturan');
  sec.querySelector('.settings-grid').innerHTML=['site_name','tagline','logo_url','seo_description','about','contact'].map(k=>'<label>'+k.replaceAll('_',' ')+'<textarea name="'+k+'" rows="'+(k==='seo_description'||k==='about'||k==='contact'?4:1)+'">'+esc(values[k]||'')+'</textarea></label>').join('')+'<button id="saveSettings" type="button">Simpan Pengaturan</button>';
  $('#saveSettings').onclick=async()=>{for(const k of ['site_name','tagline','logo_url','seo_description','about','contact']){const val=$('[name="'+k+'"]',sec).value;const {error}=await supabase.from('site_settings').upsert({key:k,value:val},{onConflict:'key'});if(error)throw toast(error.message,false)}toast('Pengaturan disimpan')};
 }
