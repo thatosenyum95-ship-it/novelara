@@ -38,6 +38,22 @@
     .chapter small { color:#9a888d; margin-top:4px; display:block; }
     .chapter-status { font-size:.76rem; font-weight:700; color:#9b6572; white-space:nowrap; }
     .ad-box { margin:28px 0; min-height:92px; display:flex; align-items:center; justify-content:center; border:1px dashed #d9c7cc; border-radius:14px; color:#a49398; background:#fcf9fa; font-size:.8rem; letter-spacing:.04em; }
+    .social-panel { margin-top:22px; }
+    .social-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+    .like-btn { border:1px solid #ead9dd; background:#fff; color:#76515a; border-radius:12px; padding:10px 14px; font:700 .86rem Manrope,sans-serif; cursor:pointer; }
+    .like-btn.liked { background:#a8586c; color:#fff; border-color:#a8586c; }
+    .comment-form { display:grid; gap:9px; margin-bottom:22px; }
+    .comment-form input,.comment-form textarea { width:100%; box-sizing:border-box; border:1px solid #eadde0; border-radius:11px; padding:11px 12px; font:400 .86rem Manrope,sans-serif; color:#49363c; background:#fff; }
+    .comment-form textarea { min-height:92px; resize:vertical; }
+    .comment-submit { justify-self:start; border:0; border-radius:10px; padding:10px 15px; background:#a8586c; color:#fff; font:700 .82rem Manrope,sans-serif; cursor:pointer; }
+    .comment-submit:disabled { opacity:.55; cursor:wait; }
+    .comment-list { display:grid; gap:12px; }
+    .comment-item { border:1px solid #eee2e5; border-radius:12px; padding:13px 14px; background:#fcf9fa; }
+    .comment-item strong { color:#49363c; font-size:.84rem; }
+    .comment-item time { color:#9b898e; font-size:.72rem; margin-left:7px; }
+    .comment-item p { margin:7px 0 0; color:#66565a; line-height:1.6; font-size:.86rem; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .comment-empty { color:#9b898e; font-size:.84rem; text-align:center; padding:16px 0; }
+    .social-error { color:#a44f63; font-size:.78rem; margin:0; }
     .stats { display:grid; gap:13px; }
     .stat { display:flex; justify-content:space-between; color:#77676b; font-size:.9rem; }
     .stat strong { color:#49363c; }
@@ -78,6 +94,7 @@
     <section class="content-grid">
       <div>
         <article class="panel"><h2>Sinopsis</h2><p class="synopsis">Memuat sinopsis...</p></article>
+        <article class="panel social-panel"><div class="social-head"><h2>Like & Komentar</h2><button class="like-btn" id="likeBtn" type="button">♡ Suka <span id="likeCount">0</span></button></div><form class="comment-form" id="commentForm"><input id="commentName" maxlength="60" placeholder="Nama kamu (opsional)" autocomplete="nickname"><textarea id="commentText" maxlength="1000" placeholder="Tulis komentar kamu..." required></textarea><button class="comment-submit" type="submit">Kirim Komentar</button><p class="social-error" id="socialError" hidden></p></form><div class="comment-list" id="commentList"></div></article>
         <article class="panel" id="chapters" style="margin-top:22px"><h2>Daftar Chapter</h2><div class="chapter-list"></div></article>
       </div>
 
@@ -113,7 +130,7 @@
 })();
 </script>
 <script type="module">
-import { getNovelBySlug, escapeHtml, renderAd } from './assets/js/reader.js';
+import { getNovelBySlug, escapeHtml, renderAd, getNovelSocial, toggleNovelLike, addNovelComment } from './assets/js/reader.js';
 const params=new URLSearchParams(location.search);
 let slug=params.get('slug')||'hujan-di-bulan-juni';
 try{
@@ -131,6 +148,12 @@ try{
  document.querySelector('.synopsis').textContent=novel.synopsis||'Belum ada sinopsis.';
  const list=document.querySelector('.chapter-list');
  list.innerHTML=novel.chapters.map(ch=>'<a class="chapter" href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+ch.chapter_number+'"><div><strong>Bab '+ch.chapter_number+' — '+escapeHtml(ch.title)+'</strong><small>'+new Date(ch.published_at||Date.now()).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+'</small></div><span class="chapter-status">Baca</span></a>').join('');
+ const likeBtn=document.getElementById('likeBtn'), likeCount=document.getElementById('likeCount'), commentList=document.getElementById('commentList'), commentForm=document.getElementById('commentForm'), commentName=document.getElementById('commentName'), commentText=document.getElementById('commentText'), socialError=document.getElementById('socialError');
+ function renderComments(items){ commentList.innerHTML=items.length?items.map(x=>'<article class="comment-item"><strong>'+escapeHtml(x.display_name||'Pembaca')+'</strong><time>'+new Date(x.created_at).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})+'</time><p>'+escapeHtml(x.content)+'</p></article>').join(''):'<div class="comment-empty">Belum ada komentar. Jadilah yang pertama. 💬</div>'; }
+ async function loadSocial(){ try{const s=await getNovelSocial(novel.id); likeCount.textContent=s.likeCount; likeBtn.classList.toggle('liked',s.liked); likeBtn.firstChild.textContent=s.liked?'♥ Suka ':'♡ Suka '; renderComments(s.comments);}catch(e){console.error(e);socialError.hidden=false;socialError.textContent='Bagian komentar belum dapat dimuat.';} }
+ likeBtn.addEventListener('click',async()=>{likeBtn.disabled=true;socialError.hidden=true;try{await toggleNovelLike(novel.id);await loadSocial();}catch(e){socialError.hidden=false;socialError.textContent='Gagal menyimpan like. Coba lagi.';}finally{likeBtn.disabled=false;}});
+ commentForm.addEventListener('submit',async e=>{e.preventDefault();socialError.hidden=true;const submit=commentForm.querySelector('.comment-submit');submit.disabled=true;try{await addNovelComment(novel.id,commentText.value,commentName.value);commentText.value='';await loadSocial();}catch(e){socialError.hidden=false;socialError.textContent=e.message||'Gagal mengirim komentar.';}finally{submit.disabled=false;}});
+ await loadSocial();
  const old=document.getElementById('bookmarkBtn'); const btn=old.cloneNode(true); old.replaceWith(btn);
  const bookmarkItem={id:novel.id,title:novel.title,author:novel.author_name||'Novelara',genre:(novel.novel_genres||[]).map(x=>x.genre?.name).filter(Boolean).join(', ')||'Novel',url:'novel.html?slug='+encodeURIComponent(novel.slug)};
  const sync=()=>{const saved=NovelaraBookmarks.has(novel.id);btn.textContent=saved?'♥ Tersimpan':'♡ Tambah Bookmark';btn.dataset.saved=saved?'true':'false'};
