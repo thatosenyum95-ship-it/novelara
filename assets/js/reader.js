@@ -23,6 +23,19 @@ export async function getNovelBySlug(slug) {
   return data;
 }
 
+export async function getLatestChapters(limit=6) {
+  const { data, error } = await supabase
+    .from('chapters')
+    .select('id,novel_id,chapter_number,title,published_at,novel:novels!inner(id,title,slug,status)')
+    .eq('status','published')
+    .eq('novel.status','published')
+    .order('published_at',{ascending:false})
+    .order('chapter_number',{ascending:false})
+    .limit(limit);
+  if (error) throw error;
+  return data || [];
+}
+
 export async function getChapterById(id) {
   const { data, error } = await supabase
     .from('chapters')
