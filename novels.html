@@ -102,7 +102,7 @@
       Coba gunakan kata kunci lain atau pilih genre yang berbeda.
     </div>
 
-    <div class="ad-box">AREA IKLAN — DIATUR DARI ADMIN</div>
+    <div class="ad-box" data-ad-position="catalog">AREA IKLAN — DIATUR DARI ADMIN</div>
   </main>
 
   <footer class="site-footer">
@@ -154,7 +154,7 @@
   </script>
 
 <script type="module">
-import { getPublishedNovels, novelCard, escapeHtml } from './assets/js/reader.js';
+import { getPublishedNovels, novelCard, escapeHtml, renderAd } from './assets/js/reader.js';
 const grid=document.getElementById('novelGrid'), input=document.getElementById('searchInput'), result=document.getElementById('resultText'), empty=document.getElementById('emptyState');
 const buttons=[...document.querySelectorAll('.genre-btn')];
 let novels=[];
