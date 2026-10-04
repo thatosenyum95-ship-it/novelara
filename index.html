@@ -104,5 +104,6 @@ try{
  if(latestGrid) latestGrid.innerHTML=latest.length ? latest.map((n,i)=>'<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" class="chapter-item"><span class="chapter-number">0'+(i+1)+'</span><div><h3>'+escapeHtml(n.title)+'</h3><p>Novel tersedia untuk dibaca</p></div><time>Baru</time></a>').join('') : '<p class="muted">Belum ada novel.</p>'; 
 }catch(e){console.error(e);}
 </script>
+<script src="assets/js/theme.js"></script>
 </body>
 </html>
