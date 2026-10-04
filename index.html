@@ -41,16 +41,16 @@
   <footer class="site-footer"><div class="container footer-grid"><div><a class="brand footer-brand" href="index.html"><span class="brand-mark">N</span><span>Novelara</span></a><p>Cerita yang menemukan hati.</p></div><div><strong>Novelara</strong><a href="novel.html">Semua Novel</a><a href="novels.html#searchInput">Pencarian</a><a href="#bookmark">Bookmark</a></div><div><strong>Informasi</strong><a href="#">Tentang Kami</a><a href="#">Kebijakan Privasi</a><a href="#">Syarat &amp; Ketentuan</a></div></div><div class="container copyright">© 2026 Novelara. Semua hak dilindungi.</div></footer>
 
 <script type="module">
-import { getPublishedNovels, escapeHtml, renderAd } from './assets/js/reader.js';
+import { getPublishedNovels, getLatestChapters, escapeHtml, renderAd } from './assets/js/reader.js';
 try{
  const novels=await getPublishedNovels();
  await Promise.all([...document.querySelectorAll('[data-ad-position]')].map(el=>renderAd(el,el.dataset.adPosition)));
  const popular=[...novels].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,4);
  const grid=document.querySelector('.book-grid');
  if(grid) grid.innerHTML=popular.length ? popular.map((n,i)=>'<article class="book-card"><a href="novel.html?slug='+encodeURIComponent(n.slug)+'"><div class="cover cover-'+((i%4)+1)+'"'+(n.cover_url?' style="background-image:url(\''+escapeHtml(n.cover_url)+'\');background-size:cover;background-position:center;"':'')+'><span>0'+(i+1)+'</span><strong>'+escapeHtml(n.title)+'</strong></div></a><div class="book-info"><span class="tag">'+escapeHtml(n.novel_genres?.[0]?.genre?.name||'Novel')+'</span><h3>'+escapeHtml(n.title)+'</h3><p>Novelara</p></div></article>').join('') : '<p class="muted">Belum ada novel populer.</p>';
- const latest=[...novels].sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,3);
+ const latest=await getLatestChapters(6);
  const latestGrid=document.querySelector('.chapter-list');
- if(latestGrid) latestGrid.innerHTML=latest.length ? latest.map((n,i)=>'<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" class="chapter-item"><span class="chapter-number">0'+(i+1)+'</span><div><h3>'+escapeHtml(n.title)+'</h3><p>Novel tersedia untuk dibaca</p></div><time>Baru</time></a>').join('') : '<p class="muted">Belum ada novel.</p>';
+ if(latestGrid) latestGrid.innerHTML=latest.length ? latest.map((c,i)=>'<a href="chapter.html?novel='+encodeURIComponent(c.novel.slug)+'&chapter='+encodeURIComponent(c.chapter_number)+'" class="chapter-item"><span class="chapter-number">'+String(c.chapter_number).padStart(2,'0')+'</span><div><h3>'+escapeHtml(c.novel.title)+' — '+escapeHtml(c.title)+'</h3><p>Chapter '+escapeHtml(c.chapter_number)+'</p></div><time>Baru diperbarui</time></a>').join('') : '<p class="muted">Tidak ada chapter terbaru.</p>';
 }catch(e){console.error(e);}
 </script>
 <script src="assets/js/theme.js"></script>
