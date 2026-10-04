@@ -173,5 +173,32 @@
       progressBar.style.width = progress + '%';
     });
   </script>
+
+<script type="module">
+import { getChapter, bookmarkNovel, isBookmarked, escapeHtml } from './assets/js/reader.js';
+const p=new URLSearchParams(location.search), novelSlug=p.get('novel')||'hujan-di-bulan-juni', number=Number(p.get('chapter')||1);
+try{
+ const result=await getChapter(novelSlug,number);
+ if(!result){location.replace('novels.html');throw new Error('Chapter not found');}
+ const {novel,chapter}=result;
+ document.title='Bab '+chapter.chapter_number+' — '+chapter.title+' | Novelara';
+ document.querySelector('.chapter-heading .eyebrow').textContent=novel.title;
+ document.querySelector('.chapter-heading h1').textContent='Bab '+chapter.chapter_number+' — '+chapter.title;
+ document.querySelector('.chapter-heading p').textContent=(chapter.published_at?new Date(chapter.published_at):new Date()).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+ const content=document.querySelector('.reader-content');
+ content.innerHTML=chapter.content.split(/\n\s*\n/).map((x,i)=>'<p'+(i===0?' class="dropcap"':'')+'>'+escapeHtml(x).replace(/\n/g,'<br>')+'</p>').join('');
+ const all=novel.chapters||[], idx=all.findIndex(x=>x.chapter_number===chapter.chapter_number), prev=all[idx-1], next=all[idx+1];
+ document.querySelector('.back-link').href='novel.html?slug='+encodeURIComponent(novel.slug);
+ const nav=document.querySelector('.chapter-nav'); nav.innerHTML='';
+ if(prev) nav.insertAdjacentHTML('beforeend','<a class="nav-btn" href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+prev.chapter_number+'">← Sebelumnya</a>');
+ if(next) nav.insertAdjacentHTML('beforeend','<a class="nav-btn" href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+next.chapter_number+'">Berikutnya →</a>');
+ const bottom=document.querySelector('.bottom-nav'); bottom.innerHTML='<a href="novel.html?slug='+encodeURIComponent(novel.slug)+'"><small>DAFTAR CHAPTER</small><strong>← Kembali ke daftar</strong></a>';
+ if(next) bottom.insertAdjacentHTML('beforeend','<a href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+next.chapter_number+'"><small>CHAPTER BERIKUTNYA</small><strong>Bab '+next.chapter_number+' — '+escapeHtml(next.title)+' →</strong></a>');
+ else bottom.insertAdjacentHTML('beforeend','<a href="novel.html?slug='+encodeURIComponent(novel.slug)+'"><small>NOVEL</small><strong>Selesai membaca →</strong></a>');
+ const old=document.getElementById('bookmarkBtn'), btn=old.cloneNode(true); old.replaceWith(btn);
+ async function sync(){btn.textContent=await isBookmarked(novel.id)?'♥ Tersimpan':'♡ Bookmark';}
+ await sync(); btn.addEventListener('click',async()=>{const r=await bookmarkNovel(novel);if(r.requiresLogin){alert('Silakan login untuk menyimpan bookmark.');return;}await sync();});
+}catch(e){console.error(e);}
+</script>
 </body>
 </html>
