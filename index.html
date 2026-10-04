@@ -57,24 +57,7 @@
           <div><span class="eyebrow">PILIHAN PEMBACA</span><h2>Novel populer</h2></div>
           <a href="search.html">Lihat semua →</a>
         </div>
-        <div class="book-grid">
-          <article class="book-card">
-            <div class="cover cover-one"><span>01</span><strong>Hujan di Bulan Juni</strong></div>
-            <div class="book-info"><span class="tag">Romance</span><h3>Hujan di Bulan Juni</h3><p>12 chapter • Selesai</p></div>
-          </article>
-          <article class="book-card">
-            <div class="cover cover-two"><span>02</span><strong>Pesan yang Tak Pernah Terkirim</strong></div>
-            <div class="book-info"><span class="tag">Drama</span><h3>Pesan yang Tak Pernah Terkirim</h3><p>18 chapter • Berjalan</p></div>
-          </article>
-          <article class="book-card">
-            <div class="cover cover-three"><span>03</span><strong>Ketika Kita Bertemu Lagi</strong></div>
-            <div class="book-info"><span class="tag">Second Chance</span><h3>Ketika Kita Bertemu Lagi</h3><p>24 chapter • Berjalan</p></div>
-          </article>
-          <article class="book-card">
-            <div class="cover cover-four"><span>04</span><strong>Rumah yang Bernama Kamu</strong></div>
-            <div class="book-info"><span class="tag">Romance</span><h3>Rumah yang Bernama Kamu</h3><p>9 chapter • Berjalan</p></div>
-          </article>
-        </div>
+        <div class="book-grid"></div>
       </div>
     </section>
 
@@ -84,25 +67,14 @@
           <div><span class="eyebrow">CHAPTER TERBARU</span><h2>Baru diperbarui</h2></div>
           <a href="search.html">Lihat semua →</a>
         </div>
-        <div class="chapter-list">
-          <a href="chapter.html" class="chapter-item"><span class="chapter-number">01</span><div><h3>Senja Terakhir</h3><p>Chapter 17 — Janji yang Tertinggal</p></div><time>Baru</time></a>
-          <a href="chapter.html" class="chapter-item"><span class="chapter-number">02</span><div><h3>Untukmu, yang Pernah Kucintai</h3><p>Chapter 31 — Jangan Pergi</p></div><time>2 jam</time></a>
-          <a href="chapter.html" class="chapter-item"><span class="chapter-number">03</span><div><h3>Kontrak Hati</h3><p>Chapter 12 — Kesepakatan Baru</p></div><time>5 jam</time></a>
-        </div>
+        <div class="chapter-list"></div>
       </div>
     </section>
 
     <section class="section" id="genre">
       <div class="container">
         <div class="section-heading"><div><span class="eyebrow">TEMUKAN CERITAMU</span><h2>Genre pilihan</h2></div></div>
-        <div class="genre-grid">
-          <a href="search.html?genre=romance">Romance <span>→</span></a>
-          <a href="search.html?genre=drama">Drama Cinta <span>→</span></a>
-          <a href="search.html?genre=second-chance">Second Chance <span>→</span></a>
-          <a href="search.html?genre=school">Teen Romance <span>→</span></a>
-          <a href="search.html?genre=marriage">Marriage Story <span>→</span></a>
-          <a href="search.html?genre=office">Office Romance <span>→</span></a>
-        </div>
+        <div class="genre-grid"></div>
       </div>
     </section>
 
@@ -126,10 +98,10 @@ try{
  const novels=await getPublishedNovels();
  const popular=[...novels].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,4);
  const grid=document.querySelector('.book-grid');
- if(grid) grid.innerHTML=popular.map((n,i)=>'<article class="book-card"><a href="novel.html?slug='+encodeURIComponent(n.slug)+'"><div class="cover cover-'+((i%4)+1)+'"><span>0'+(i+1)+'</span><strong>'+escapeHtml(n.title)+'</strong></div></a><div class="book-info"><span class="tag">'+escapeHtml(n.novel_genres?.[0]?.genre?.name||'Novel')+'</span><h3>'+escapeHtml(n.title)+'</h3><p>Novelara</p></div></article>').join('');
+ if(grid) grid.innerHTML=popular.length ? popular.map((n,i)=>'<article class="book-card"><a href="novel.html?slug='+encodeURIComponent(n.slug)+'"><div class="cover cover-'+((i%4)+1)+'"><span>0'+(i+1)+'</span><strong>'+escapeHtml(n.title)+'</strong></div></a><div class="book-info"><span class="tag">'+escapeHtml(n.novel_genres?.[0]?.genre?.name||'Novel')+'</span><h3>'+escapeHtml(n.title)+'</h3><p>Novelara</p></div></article>').join('');
  const latest=[...novels].sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,3);
  const latestGrid=document.querySelector('.chapter-list');
- if(latestGrid) latestGrid.innerHTML=latest.map((n,i)=>'<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" class="chapter-item"><span class="chapter-number">0'+(i+1)+'</span><div><h3>'+escapeHtml(n.title)+'</h3><p>Novel tersedia untuk dibaca</p></div><time>Baru</time></a>').join('');
+ if(latestGrid) latestGrid.innerHTML=latest.length ? latest.map((n,i)=>'<a href="novel.html?slug='+encodeURIComponent(n.slug)+'" class="chapter-item"><span class="chapter-number">0'+(i+1)+'</span><div><h3>'+escapeHtml(n.title)+'</h3><p>Novel tersedia untuk dibaca</p></div><time>Baru</time></a>').join('') : '<p class="muted">Belum ada novel.</p>'; 
 }catch(e){console.error(e);}
 </script>
 </body>
