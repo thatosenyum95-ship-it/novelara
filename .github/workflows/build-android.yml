@@ -67,13 +67,41 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Prepare release signing
         working-directory: android
-        run: ./gradlew assembleDebug
+        shell: bash
+        run: |
+          # Generate/use the standard Android debug keystore only as a temporary
+          # signing key so the release APK is directly installable.
+          ./gradlew assembleDebug
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("app/build.gradle")
+          s = p.read_text()
+          signing = '''
+              signingConfigs {
+                  release {
+                      storeFile file(System.getProperty("user.home") + "/.android/debug.keystore")
+                      storePassword "android"
+                      keyAlias "AndroidDebugKey"
+                      keyPassword "android"
+                  }
+              }
+          '''
+          if "signingConfigs {" not in s:
+              s = s.replace("android {", "android {" + signing, 1)
+          if "signingConfig signingConfigs.release" not in s:
+              s = s.replace("buildTypes {", "buildTypes {\n        release {\n            signingConfig signingConfigs.release\n        }", 1)
+          p.write_text(s)
+          PY
+
+      - name: Build installable release APK
+        working-directory: android
+        run: ./gradlew assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: novelara-android-final
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: novelara-android-release-installable
+          path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
