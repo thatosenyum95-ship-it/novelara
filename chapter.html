@@ -146,6 +146,7 @@ import { getChapter, escapeHtml, renderAd, trackVisit } from './assets/js/reader
 const p=new URLSearchParams(location.search), novelSlug=p.get('novel')||'hujan-di-bulan-juni', number=Number(p.get('chapter')||1);
 try{
  const result=await getChapter(novelSlug,number);
+ if(result?.novel?.id && result?.chapter?.id) await trackVisit('read',result.novel.id,result.chapter.id);
  if(!result){location.replace('novels.html');throw new Error('Chapter not found');}
  const {novel,chapter}=result;
  document.title='Bab '+chapter.chapter_number+' — '+chapter.title+' | Novelara';
