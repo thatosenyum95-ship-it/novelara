@@ -13,13 +13,13 @@ export async function getPublishedNovels() {
 export async function getNovelBySlug(slug) {
   const { data, error } = await supabase
     .from('novels')
-    .select('id,title,slug,author_name,synopsis,cover_url,status,published_at,views,followers_count,novel_genres(genre:genres(name,slug)),chapters(id,chapter_number,title,published_at,status)')
+    .select('id,title,slug,author_name,synopsis,cover_url,status,published_at,views,followers_count,novel_genres(genre:genres(name,slug)),babs(id,bab_number,title,published_at,status)')
     .eq('slug',slug)
     .eq('status','published')
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  data.chapters=(data.chapters||[]).filter(c=>c.status==='published').sort((a,b)=>a.chapter_number-b.chapter_number);
+  data.babs=(data.babs||[]).filter(c=>c.status==='published').sort((a,b)=>a.bab_number-b.bab_number);
   return data;
 }
 
