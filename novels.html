@@ -110,53 +110,12 @@
     <div class="container"><p>© 2026 Novelara. Cerita yang menemukan hati.</p></div>
   </footer>
 
-  <script>
-    const cards = [...document.querySelectorAll('.novel-card')];
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const genreButtons = [...document.querySelectorAll('.genre-btn')];
-    const resultText = document.getElementById('resultText');
-    const emptyState = document.getElementById('emptyState');
-    let selectedGenre = 'all';
 
-    function filterNovels() {
-      const query = searchInput.value.trim().toLowerCase();
-      let visible = 0;
-
-      cards.forEach(card => {
-        const title = card.dataset.title.toLowerCase();
-        const author = card.dataset.author.toLowerCase();
-        const genres = card.dataset.genres.split(',').map(g => g.trim());
-        const matchesSearch = !query || title.includes(query) || author.includes(query);
-        const matchesGenre = selectedGenre === 'all' || genres.includes(selectedGenre);
-        const show = matchesSearch && matchesGenre;
-        card.style.display = show ? '' : 'none';
-        if (show) visible++;
-      });
-
-      resultText.textContent = query || selectedGenre !== 'all'
-        ? visible + ' novel ditemukan'
-        : 'Menampilkan semua novel (' + visible + ')';
-      emptyState.style.display = visible ? 'none' : 'block';
-    }
-
-    searchInput.addEventListener('input', filterNovels);
-    searchBtn.addEventListener('click', filterNovels);
-
-    genreButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        selectedGenre = button.dataset.genre;
-        genreButtons.forEach(btn => btn.classList.toggle('active', btn === button));
-        filterNovels();
-      });
-    });
-
-    filterNovels();
-  </script>
 
 <script type="module">
 import { getPublishedNovels, novelCard, escapeHtml, renderAd } from './assets/js/reader.js';
-const grid=document.getElementById('novelGrid'), input=document.getElementById('searchInput'), result=document.getElementById('resultText'), empty=document.getElementById('emptyState');\nconst initialQuery=new URLSearchParams(location.search).get('q')||''; if(initialQuery) input.value=initialQuery;
+const grid=document.getElementById('novelGrid'), input=document.getElementById('searchInput'), result=document.getElementById('resultText'), empty=document.getElementById('emptyState');
+const initialQuery=new URLSearchParams(location.search).get('q')||''; if(initialQuery) input.value=initialQuery;
 const buttons=[...document.querySelectorAll('.genre-btn')];
 let novels=[];
 function render(){
