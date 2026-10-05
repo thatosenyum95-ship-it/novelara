@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,15 +16,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+          cache: gradle
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Add Android platform for Admin
         run: npx cap add android --config capacitor.admin.config.ts
@@ -32,41 +34,38 @@ jobs:
       - name: Sync Capacitor Admin
         run: npx cap sync android --config capacitor.admin.config.ts
 
-      - name: Configure Admin APK
-        working-directory: android
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path("app/build.gradle")
-          s = p.read_text()
-          signing = '''
-              signingConfigs {
-                  release {
-                      storeFile file(System.getProperty("user.home") + "/.android/novelara-admin-release.keystore")
-                      storePassword "android"
-                      keyAlias "novelara-admin"
-                      keyPassword "android"
-                  }
-              }
-          '''
-          if "signingConfigs {" not in s:
-              s = s.replace("android {", "android {" + signing, 1)
-          if "signingConfig signingConfigs.release" not in s:
-              s = s.replace("buildTypes {", "buildTypes {\n        release {\n            signingConfig signingConfigs.release\n        }", 1)
-          p.write_text(s)
-          PY
-
-          mkdir -p "$HOME/.android"
-          keytool -genkeypair -v             -keystore "$HOME/.android/novelara-admin-release.keystore"             -storepass android -keypass android             -alias novelara-admin -keyalg RSA -keysize 2048 -validity 10000             -dname "CN=Novelara Admin, OU=Novelara, O=Novelara, L=Pontianak, ST=West Kalimantan, C=ID"
-
-      - name: Build installable Admin APK
+      - name: Build unsigned release APK
         working-directory: android
         run: ./gradlew assembleRelease
+
+      - name: Generate release signing key
+        run: |
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v \
+            -keystore "$HOME/.android/novelara-admin-release.keystore" \
+            -storepass android -keypass android \
+            -alias novelara-admin -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Novelara Admin, OU=Novelara, O=Novelara, L=Pontianak, ST=West Kalimantan, C=ID"
+
+      - name: Sign and verify release APK
+        working-directory: android
+        run: |
+          APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+          SIGNED="app/build/outputs/apk/release/Novelara-Admin-release.apk"
+          ZIPALIGN="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/zipalign"
+          APKSIGNER="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner"
+          "$ZIPALIGN" -f -p 4 "$APK" app-release-aligned.apk
+          "$APKSIGNER" sign \
+            --ks "$HOME/.android/novelara-admin-release.keystore" \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out "$SIGNED" app-release-aligned.apk
+          "$APKSIGNER" verify --verbose "$SIGNED"
+          rm -f app-release-aligned.apk
 
       - name: Upload Admin APK
         uses: actions/upload-artifact@v4
         with:
           name: novelara-admin-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/Novelara-Admin-release.apk
           if-no-files-found: error
