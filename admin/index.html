@@ -130,12 +130,12 @@ async function editChapter(id, preferredNovelId=null){
  }
 
  modal(
-   id?'Edit Chapter':'Tambah Bab',
+   id?'Edit Bab':'Tambah Bab',
    '<label>Novel<select name="novel_id" required>'+novels.map(n=>'<option value="'+n.id+'">'+esc(n.title)+'</option>').join('')+'</select></label>'+
    '<label>Nomor Bab<input name="chapter_number" type="number" min="1" required value="'+suggestedNumber+'"><small style="display:block;margin-top:6px;color:#71717a">Nomor berikutnya otomatis disarankan. Kamu tetap bisa mengubahnya.</small></label>'+
    '<label>Judul<input name="title" required value="'+esc(c.title)+'"></label>'+
    '<label>Status<select name="status"><option value="draft">draft</option><option value="published">published</option><option value="scheduled">scheduled</option></select></label>'+
-   '<label>Isi Chapter<textarea name="content" rows="14" required>'+esc(c.content||'')+'</textarea></label>',
+   '<label>Isi Bab<textarea name="content" rows="14" required>'+esc(c.content||'')+'</textarea></label>',
    async fd=>{
      const novelId=fd.get('novel_id');
      const chapterNumber=Number(fd.get('chapter_number'));
@@ -159,7 +159,7 @@ async function editChapter(id, preferredNovelId=null){
        ?await supabase.from('chapters').update(payload).eq('id',id)
        :await supabase.from('chapters').insert(payload);
      if(error)throw error;
-     toast(id?'Chapter diperbarui':'Bab '+chapterNumber+' berhasil ditambahkan');
+     toast(id?'Bab diperbarui':'Bab '+chapterNumber+' berhasil ditambahkan');
      loadChapters();
    }
  );
