@@ -9,7 +9,7 @@
 <div class="admin-shell" id="adminApp" hidden>
 <aside class="sidebar">
 <a class="admin-brand" href="index.html"><span>N</span> Novelara</a>
-<nav id="adminNav"><a href="#dashboard" data-section="dashboard">Dashboard</a><a href="#novel" data-section="novel">Novel</a><a href="#chapter" data-section="chapter">Chapter</a><a href="#monetisasi" data-section="monetisasi">Monetisasi</a><a href="#pengaturan" data-section="pengaturan">Pengaturan</a></nav>
+<nav id="adminNav"><a href="#dashboard" data-section="dashboard">Dashboard</a><a href="#novel" data-section="novel">Novel</a><a href="#monetisasi" data-section="monetisasi">Monetisasi</a><a href="#pengaturan" data-section="pengaturan">Pengaturan</a></nav>
 <div class="sidebar-footer"><a class="back-link" href="../index.html">← Lihat Website</a><button class="logout-link" type="button" id="logoutBtn">Keluar</button></div>
 </aside>
 <main class="admin-main">
@@ -17,7 +17,6 @@
 <div class="stats"><article><span>Pengunjung</span><strong>—</strong><small>belum ada data</small></article><article><span>Pembaca</span><strong>0</strong><small>belum ada pembaca</small></article><article><span>Novel</span><strong>0</strong><small>belum ada novel</small></article><article><span>Pendapatan Iklan</span><strong>—</strong><small>belum ada data</small></article></div>
 <div class="panel"><h2>Novel populer</h2><p class="muted">Akan muncul setelah ada novel dan pembacaan nyata.</p><div class="table"><div class="row head"><span>Novel</span><span>Pembaca</span></div><p class="muted">Belum ada data.</p></div></div></section>
 <section class="admin-section" id="novel"><header><div><p class="eyebrow">KONTEN</p><h1>Kelola Novel</h1><p class="muted">Tambah, edit, hapus, dan atur genre novel.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" id="addNovelBtn">+ Tambah Novel</button><button type="button" id="addChapterFromNovelBtn">+ Tambah Bab</button></div></header><div class="panel"><div class="table"><div class="row head"><span>Judul</span><span>Genre</span><span>Status</span><span>Aksi</span></div><p class="muted">Belum ada novel.</p></div></div></section>
-<section class="admin-section" id="chapter"><header><div><p class="eyebrow">KONTEN</p><h1>Kelola Chapter</h1><p class="muted">Setiap novel memiliki daftar bab sendiri. Bab berikutnya dibuat langsung dari novel yang dipilih.</p></div></header><div id="chapterManager"><p class="muted">Memuat daftar novel…</p></div></section>
 <section class="admin-section" id="monetisasi"><header><div><p class="eyebrow">PENDAPATAN</p><h1>Monetisasi</h1><p class="muted">Atur iklan yang tampil di area pembaca.</p></div></header><div class="form-grid"><div class="panel"><h2>Posisi iklan</h2><p class="muted">Belum ada slot iklan. Tambahkan konfigurasi iklan saat sudah siap monetisasi.</p></div><div class="panel"><h2>Ad code</h2><textarea rows="9" placeholder="Tempel kode iklan dari jaringan iklan di sini..."></textarea><button type="button">Simpan Pengaturan Iklan</button></div></div></section>
 <section class="admin-section" id="pengaturan"><header><div><p class="eyebrow">KONFIGURASI</p><h1>Pengaturan Website</h1><p class="muted">Identitas, SEO, dan halaman informasi Novelara.</p></div></header><div class="panel settings-grid"><label>Nama Website<input value="Novelara"></label><label>Tagline<input value="Cerita yang Menemukan Hati"></label><label>Logo<input placeholder="URL logo"></label><label>SEO Description<textarea rows="4">Novel romance Indonesia yang menghadirkan kisah cinta untuk dibaca kapan saja.</textarea></label><label>About<textarea rows="4" placeholder="Deskripsi tentang Novelara..."></textarea></label><label>Contact<textarea rows="4" placeholder="Email atau informasi kontak..."></textarea></label></div></section>
 </main></div>
@@ -100,70 +99,20 @@ async function editNovel(id){
  });
  const status=$('select[name=status]',document); if(status)status.value=n.status;
 }
-async function loadChapters(){
- const sec=$('#chapter');
- const [{data:novels,error:novelError},{data:chapters,error:chapterError}]=await Promise.all([
-   supabase.from('novels').select('id,title,status').order('title'),
-   supabase.from('chapters').select('id,novel_id,chapter_number,title,status,published_at').order('chapter_number',{ascending:true})
- ]);
- if(novelError)throw novelError;
- if(chapterError)throw chapterError;
+async function loadChapters(){ return; }
 
- const byNovel=new Map((novels||[]).map(n=>[n.id,[]]));
- (chapters||[]).forEach(ch=>{if(!byNovel.has(ch.novel_id))byNovel.set(ch.novel_id,[]);byNovel.get(ch.novel_id).push(ch)});
-
- const cards=(novels||[]).map(n=>{
-   const list=byNovel.get(n.id)||[];
-   const maxChapter=list.reduce((max,ch)=>Math.max(max,Number(ch.chapter_number)||0),0);
-   const nextChapter=maxChapter+1;
-   return '<article class="panel chapter-book" style="margin-bottom:16px">'+
-     '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">'+
-       '<div><p class="eyebrow">NOVEL</p><h2 style="margin:0 0 5px">'+esc(n.title)+'</h2><p class="muted" style="margin:0">'+list.length+' bab · Bab berikutnya: <strong>'+nextChapter+'</strong></p></div>'+
-       '<button type="button" class="add-chapter-btn" data-add-chapter="'+n.id+'" style="white-space:nowrap">+ Tambah Bab '+nextChapter+'</button>'+
-     '</div>'+
-     '<div class="table" style="margin-top:16px">'+
-       (list.length
-         ? '<div class="row head"><span>Bab</span><span>Judul</span><span>Status</span><span>Aksi</span></div>'+list.map(ch=>
-             '<div class="row">'+
-               '<strong>Bab '+Number(ch.chapter_number)+'</strong>'+
-               '<span>'+esc(ch.title)+'</span>'+
-               '<span class="pill">'+esc(ch.status)+'</span>'+
-               '<span><button type="button" data-edit-chapter="'+ch.id+'">Edit</button> <button type="button" data-del-chapter="'+ch.id+'">Hapus</button></span>'+
-             '</div>').join('')
-         : '<div style="padding:16px"><p class="muted" style="margin:0 0 12px">Belum ada bab untuk novel ini.</p><button type="button" data-add-chapter="'+n.id+'">+ Buat Bab 1</button></div>')+
-     '</div>'+
-   '</article>';
- }).join('');
-
- sec.querySelector('#chapterManager').innerHTML=cards || '<div class="panel"><p class="muted">Belum ada novel. Buat novel terlebih dahulu di menu Novel.</p></div>';
-
- $$('[data-add-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(null,b.dataset.addChapter));
- $$('[data-edit-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(b.dataset.editChapter));
- $$('[data-del-chapter]',sec).forEach(b=>b.onclick=async()=>{
-   if(!confirm('Hapus chapter ini?'))return;
-   const {error}=await supabase.from('chapters').delete().eq('id',b.dataset.delChapter);
-   if(error){toast(error.message,false);return}
-   toast('Chapter dihapus');
-   loadChapters();
- });
-}
 async function chooseNovelForChapter(){
  const {data:novels,error}=await supabase.from('novels').select('id,title,status').eq('status','published').order('title');
  if(error)throw error;
  if(!novels?.length){toast('Belum ada novel yang sudah dirilis.',false);return}
- modal('Pilih Novel untuk Tambah Bab',
-   '<p class="muted" style="margin-top:0">Pilih novel yang sudah dirilis untuk menambahkan bab berikutnya.</p>'+
-   '<div style="display:grid;gap:10px">'+
-   novels.map(n=>'<button type="button" data-pick-novel="'+n.id+'" style="text-align:left;padding:14px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;cursor:pointer"><strong>'+esc(n.title)+'</strong><span style="display:block;color:#71717a;font-size:13px;margin-top:4px">Tambah bab berikutnya</span></button>').join('')+
-   '</div>',
-   async()=>{}
- );
- const wrap=document.querySelector('body > div[style*="position:fixed"]');
- if(wrap){
-   $('[data-pick-novel]',wrap).forEach(b=>b.onclick=()=>{wrap.remove();editChapter(null,b.dataset.pickNovel)});
-   const form=wrap.querySelector('[data-form]'); if(form) form.style.display='none';
- }
+ const wrap=document.createElement('div');
+ wrap.style='position:fixed;inset:0;background:#0008;z-index:9998;display:grid;place-items:center;padding:20px';
+ wrap.innerHTML='<div style="background:#fff;color:#18181b;width:min(620px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:24px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Pilih Novel untuk Tambah Bab</h2><button type="button" data-close>✕</button></div><p style="color:#71717a">Pilih novel yang sudah dirilis untuk menambahkan bab berikutnya.</p><div style="display:grid;gap:10px">'+novels.map(n=>'<button type="button" data-pick-novel="'+n.id+'" style="text-align:left;padding:14px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;cursor:pointer"><strong>'+esc(n.title)+'</strong><span style="display:block;color:#71717a;font-size:13px;margin-top:4px">Tambah bab berikutnya</span></button>').join('')+'</div></div>';
+ document.body.appendChild(wrap);
+ $('[data-close]',wrap).onclick=()=>wrap.remove();
+ $$('[data-pick-novel]',wrap).forEach(b=>b.onclick=()=>{wrap.remove();editChapter(null,b.dataset.pickNovel)});
 }
+
 async function editChapter(id, preferredNovelId=null){
  const [{data:c,error},{data:novels}]=await Promise.all([
    id
@@ -174,6 +123,7 @@ async function editChapter(id, preferredNovelId=null){
  if(error)throw error;
 
  let suggestedNumber=Number(c.chapter_number)||1;
+ if(!id && !c.novel_id)throw new Error('Pilih novel terlebih dahulu untuk menambahkan bab.');
  if(!id && c.novel_id){
    const {data:existing}=await supabase.from('chapters').select('chapter_number').eq('novel_id',c.novel_id).order('chapter_number',{ascending:false}).limit(1);
    suggestedNumber=(Number(existing?.[0]?.chapter_number)||0)+1;
@@ -241,7 +191,7 @@ async function loadUsers(){
 }
 const nav=$('#adminNav');if(nav&&!$('#usersLink')){const a=document.createElement('a');a.id='usersLink';a.href='#users';a.dataset.section='users';a.textContent='Pengguna';nav.appendChild(a)}
 const originalRoute = window.route;
-async function refreshAll(){try{await Promise.all([loadDashboard(),loadNovels(),loadChapters(),loadGenres(),loadAds(),loadSettings(),loadUsers()])}catch(e){console.error(e);toast(e.message||'Gagal memuat data Admin',false)}}
+async function refreshAll(){try{await Promise.all([loadDashboard(),loadNovels(),loadGenres(),loadAds(),loadSettings(),loadUsers()])}catch(e){console.error(e);toast(e.message||'Gagal memuat data Admin',false)}}
 document.addEventListener('click',e=>{if(e.target.matches('#addNovelBtn'))editNovel(null);if(e.target.matches('#addChapterFromNovelBtn'))chooseNovelForChapter();if(!e.target.closest('[data-novel-menu]')&&!e.target.closest('[data-more-novel]'))$$('[data-novel-menu]').forEach(m=>m.hidden=true)});
 window.addEventListener('hashchange',()=>{if(location.hash==='#users'){ $$('.admin-section').forEach(s=>s.classList.toggle('active-section',s.id==='users'));$$('#adminNav a').forEach(a=>a.classList.toggle('active',a.dataset.section==='users')) }});
 await refreshAll();
