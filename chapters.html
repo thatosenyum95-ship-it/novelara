@@ -4,7 +4,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2988904622354147" crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Daftar chapter terbaru Novelara.">
+  <meta name="description" content="Daftar bab terbaru Novelara.">
   <title>Chapter Terbaru — Novelara</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,9 +32,9 @@
     <div class="container">
       <div class="section-heading">
         <div>
-          <span class="eyebrow">CHAPTER</span>
-          <h1>Semua Chapter Terbaru</h1>
-          <p class="muted">Chapter yang baru diperbarui dari novel yang sudah dipublikasikan.</p>
+          <span class="eyebrow">BAB</span>
+          <h1>Semua Bab Terbaru</h1>
+          <p class="muted">Bab yang baru diperbarui dari novel yang sudah dipublikasikan.</p>
         </div>
       </div>
       <div class="chapter-list" id="chapterList"></div>
@@ -59,7 +59,7 @@ const list = document.querySelector('#chapterList');
 try {
   const chapters = await getLatestChapters(100);
   list.innerHTML = chapters.length
-    ? chapters.map(c => '<a href="chapter.html?novel='+encodeURIComponent(c.novel.slug)+'&chapter='+encodeURIComponent(c.chapter_number)+'" class="chapter-item"><span class="chapter-number">'+String(c.chapter_number).padStart(2,'0')+'</span><div><h2>'+escapeHtml(c.novel.title)+' — '+escapeHtml(c.title)+'</h2><p>Chapter '+escapeHtml(c.chapter_number)+'</p></div><time>Baru diperbarui</time></a>').join('')
+    ? chapters.map(c => '<a href="chapter.html?novel='+encodeURIComponent(c.novel.slug)+'&chapter='+encodeURIComponent(c.chapter_number)+'" class="chapter-item"><span class="chapter-number">'+String(c.chapter_number).padStart(2,'0')+'</span><div><h2>'+escapeHtml(c.novel.title)+' — '+escapeHtml(c.title)+'</h2><p>Bab '+escapeHtml(c.chapter_number)+'</p></div><time>Baru diperbarui</time></a>').join('')
     : '<p class="muted">Tidak ada chapter terbaru.</p>';
 } catch (error) {
   console.error(error);
