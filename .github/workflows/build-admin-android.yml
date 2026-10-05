@@ -1,0 +1,72 @@
+name: Build Novelara Admin APK
+
+on:
+  push:
+    branches: [admin-apk]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Add Android platform for Admin
+        run: npx cap add android --config capacitor.admin.config.ts
+
+      - name: Sync Capacitor Admin
+        run: npx cap sync android --config capacitor.admin.config.ts
+
+      - name: Configure Admin APK
+        working-directory: android
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("app/build.gradle")
+          s = p.read_text()
+          signing = '''
+              signingConfigs {
+                  release {
+                      storeFile file(System.getProperty("user.home") + "/.android/novelara-admin-release.keystore")
+                      storePassword "android"
+                      keyAlias "novelara-admin"
+                      keyPassword "android"
+                  }
+              }
+          '''
+          if "signingConfigs {" not in s:
+              s = s.replace("android {", "android {" + signing, 1)
+          if "signingConfig signingConfigs.release" not in s:
+              s = s.replace("buildTypes {", "buildTypes {\n        release {\n            signingConfig signingConfigs.release\n        }", 1)
+          p.write_text(s)
+          PY
+
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v             -keystore "$HOME/.android/novelara-admin-release.keystore"             -storepass android -keypass android             -alias novelara-admin -keyalg RSA -keysize 2048 -validity 10000             -dname "CN=Novelara Admin, OU=Novelara, O=Novelara, L=Pontianak, ST=West Kalimantan, C=ID"
+
+      - name: Build installable Admin APK
+        working-directory: android
+        run: ./gradlew assembleRelease
+
+      - name: Upload Admin APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: novelara-admin-release
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
