@@ -148,7 +148,7 @@ try{
  document.querySelector('.meta-row').innerHTML='<span>★ Novelara</span><span>'+(novel.views||0)+' pembaca</span><span>'+novel.chapters.length+' bab</span>';
  document.querySelector('.synopsis').textContent=novel.synopsis||'Belum ada sinopsis untuk novel ini.';
  const list=document.querySelector('.chapter-list');
- list.innerHTML=novel.chapters.map(ch=>'<a class="chapter" href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+ch.chapter_number+'"><div><strong>Bab '+ch.chapter_number+' — '+escapeHtml(ch.title)+'</strong><small>'+new Date(ch.published_at||Date.now()).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+'</small></div><span class="chapter-status">Baca</span></a>').join('');
+ list.innerHTML=novel.babs.map(ch=>'<a class="chapter" href="bab.html?novel='+encodeURIComponent(novel.slug)+'&bab='+ch.bab_number+'"><div><strong>Bab '+ch.bab_number+' — '+escapeHtml(ch.title)+'</strong><small>'+new Date(ch.published_at||Date.now()).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+'</small></div><span class="chapter-status">Baca</span></a>').join('');
  const likeBtn=document.getElementById('likeBtn'), likeCount=document.getElementById('likeCount'), commentList=document.getElementById('commentList'), commentForm=document.getElementById('commentForm'), commentName=document.getElementById('commentName'), commentText=document.getElementById('commentText'), socialError=document.getElementById('socialError');
  function renderComments(items){ commentList.innerHTML=items.length?items.map(x=>'<article class="comment-item"><strong>'+escapeHtml(x.display_name||'Pembaca')+'</strong><time>'+new Date(x.created_at).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})+'</time><p>'+escapeHtml(x.content)+'</p></article>').join(''):'<div class="comment-empty">Belum ada komentar. Jadilah yang pertama. 💬</div>'; }
  async function loadSocial(){ try{const s=await getNovelSocial(novel.id); likeCount.textContent=s.likeCount; likeBtn.classList.toggle('liked',s.liked); likeBtn.firstChild.textContent=s.liked?'♥ Suka ':'♡ Suka '; renderComments(s.comments);}catch(e){console.error(e);socialError.hidden=false;socialError.textContent='Bagian komentar belum dapat dimuat.';} }
@@ -160,7 +160,7 @@ try{
  const sync=()=>{const saved=NovelaraBookmarks.has(novel.id);btn.textContent=saved?'♥ Tersimpan':'♡ Tambah Bookmark';btn.dataset.saved=saved?'true':'false'};
  sync();
  btn.addEventListener('click',()=>{NovelaraBookmarks.toggle(bookmarkItem);sync();});
- const read=document.querySelector('.btn-primary'); read.href=novel.chapters[0]?'chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter=1':'#';
+ const read=document.querySelector('.btn-primary'); read.href=novel.babs[0]?'bab.html?novel='+encodeURIComponent(novel.slug)+'&bab=1':'#';
 }catch(e){console.error(e);}
 </script>
 <script src="assets/js/theme.js"></script>
