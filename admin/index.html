@@ -113,9 +113,9 @@ async function loadChapters(){
   const list=byNovel.get(n.id)||[];
   return '<article class="panel" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><p class="eyebrow">NOVEL</p><h2 style="margin:0">'+esc(n.title)+'</h2></div><button type="button" data-add-chapter="'+n.id+'">+ Tambah Chapter</button></div><div class="table" style="margin-top:16px">'+(list.length?'<div class="row head"><span>Chapter</span><span>Judul</span><span>Status</span><span>Aksi</span></div>'+list.map(ch=>'<div class="row"><strong>Chapter '+Number(ch.chapter_number)+'</strong><span>'+esc(ch.title)+'</span><span class="pill">'+esc(ch.status)+'</span><span><button type="button" data-edit-chapter="'+ch.id+'">Edit</button> <button type="button" data-del-chapter="'+ch.id+'">Hapus</button></span></div>').join(''):'<div style="padding:16px"><p class="muted">Belum ada chapter.</p></div>')+'</div></article>';
  }).join('')||'<div class="panel"><p class="muted">Belum ada novel.</p></div>';
- $('[data-add-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(null,b.dataset.addChapter));
- $('[data-edit-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(b.dataset.editChapter));
- $('[data-del-chapter]',sec).forEach(b=>b.onclick=async()=>{if(!confirm('Hapus chapter ini?'))return;const {error}=await supabase.from('chapters').delete().eq('id',b.dataset.delChapter);if(error){toast(error.message,false);return}toast('Chapter dihapus');loadChapters()});
+ $$('[data-add-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(null,b.dataset.addChapter));
+ $$('[data-edit-chapter]',sec).forEach(b=>b.onclick=()=>editChapter(b.dataset.editChapter));
+ $$('[data-del-chapter]',sec).forEach(b=>b.onclick=async()=>{if(!confirm('Hapus chapter ini?'))return;const {error}=await supabase.from('chapters').delete().eq('id',b.dataset.delChapter);if(error){toast(error.message,false);return}toast('Chapter dihapus');loadChapters()});
 }
 
 
