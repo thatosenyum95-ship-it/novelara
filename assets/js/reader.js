@@ -24,6 +24,40 @@ export async function getNovelBySlug(slug) {
   return data;
 }
 
+export async function getBab(novelSlug, babNumber) {
+  const { data: novel, error: novelError } = await supabase
+    .from('novels')
+    .select('id,title,slug,author_name,synopsis,cover_url,status,published_at,views,followers_count,novel_genres(genre:genres(name,slug))')
+    .eq('slug', novelSlug)
+    .eq('status', 'published')
+    .maybeSingle();
+  if (novelError) throw novelError;
+  if (!novel) return null;
+
+  const { data: babs, error: babError } = await supabase
+    .from('babs')
+    .select('id,novel_id,bab_number,title,content,published_at,status')
+    .eq('novel_id', novel.id)
+    .eq('status', 'published')
+    .order('bab_number', { ascending: true });
+  if (babError) throw babError;
+
+  const publishedBabs = babs || [];
+  const bab = publishedBabs.find(item => item.bab_number === Number(babNumber));
+  if (!bab) return null;
+
+  novel.babs = publishedBabs.map(item => ({
+    id: item.id,
+    novel_id: item.novel_id,
+    bab_number: item.bab_number,
+    title: item.title,
+    published_at: item.published_at,
+    status: item.status
+  }));
+
+  return { novel, bab };
+}
+
 export async function getLatestChapters(limit=6) {
   const { data, error } = await supabase
     .from('chapters')
