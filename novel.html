@@ -4,7 +4,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2988904622354147" crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Detail novel di Novelara. Baca sinopsis dan chapter novel Indonesia.">
+  <meta name="description" content="Detail novel di Novelara. Baca sinopsis dan bab novel Indonesia.">
   <title>Novel — Novelara</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,7 +96,7 @@
       <div>
         <article class="panel"><h2>Sinopsis</h2><p class="synopsis">Memuat sinopsis...</p></article>
         <article class="panel social-panel"><div class="social-head"><h2>Like & Komentar</h2><button class="like-btn" id="likeBtn" type="button">♡ Suka <span id="likeCount">0</span></button></div><form class="comment-form" id="commentForm"><input id="commentName" maxlength="60" placeholder="Nama kamu (opsional)" autocomplete="nickname"><textarea id="commentText" maxlength="1000" placeholder="Tulis komentar kamu..." required></textarea><button class="comment-submit" type="submit">Kirim Komentar</button><p class="social-error" id="socialError" hidden></p></form><div class="comment-list" id="commentList"></div></article>
-        <article class="panel" id="chapters" style="margin-top:22px"><h2>Daftar Chapter</h2><div class="chapter-list"></div></article>
+        <article class="panel" id="chapters" style="margin-top:22px"><h2>Daftar Bab</h2><div class="chapter-list"></div></article>
       </div>
 
       <aside class="panel"><h2>Info Novel</h2><div class="stats"><div class="stat"><span>Status</span><strong>Memuat...</strong></div><div class="stat"><span>Genre utama</span><strong>—</strong></div><div class="stat"><span>Bahasa</span><strong>Indonesia</strong></div><div class="stat"><span>Diperbarui</span><strong>—</strong></div></div></aside>
@@ -145,7 +145,7 @@ try{
  document.querySelector('.novel-info h1').textContent=novel.title;
  document.querySelector('.novel-info .author strong').textContent=novel.author_name||'Novelara';
  document.querySelector('.tags').innerHTML=(novel.novel_genres||[]).map(x=>x.genre).filter(Boolean).map(g=>'<span class="tag">'+escapeHtml(g.name)+'</span>').join('');
- document.querySelector('.meta-row').innerHTML='<span>★ Novelara</span><span>'+(novel.views||0)+' pembaca</span><span>'+novel.chapters.length+' chapter</span>';
+ document.querySelector('.meta-row').innerHTML='<span>★ Novelara</span><span>'+(novel.views||0)+' pembaca</span><span>'+novel.chapters.length+' bab</span>';
  document.querySelector('.synopsis').textContent=novel.synopsis||'Belum ada sinopsis untuk novel ini.';
  const list=document.querySelector('.chapter-list');
  list.innerHTML=novel.chapters.map(ch=>'<a class="chapter" href="chapter.html?novel='+encodeURIComponent(novel.slug)+'&chapter='+ch.chapter_number+'"><div><strong>Bab '+ch.chapter_number+' — '+escapeHtml(ch.title)+'</strong><small>'+new Date(ch.published_at||Date.now()).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+'</small></div><span class="chapter-status">Baca</span></a>').join('');
