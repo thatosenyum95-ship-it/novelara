@@ -134,6 +134,22 @@ async function loadChapters(){
  });
 }
 
+async function chooseNovelForChapter(){
+ const {data:novels,error}=await supabase.from('novels').select('id,title,status').order('title');
+ if(error)throw error;
+ if(!novels?.length){toast('Belum ada novel. Tambahkan novel terlebih dahulu.',false);return}
+ const wrap=document.createElement('div');
+ wrap.style='position:fixed;inset:0;background:#0008;z-index:9998;display:grid;place-items:center;padding:20px';
+ wrap.innerHTML='<div style="background:#fff;color:#18181b;width:min(620px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:24px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Pilih Novel untuk Tambah Chapter</h2><button type="button" data-close>✕</button></div><p style="color:#71717a">Pilih novel untuk menambahkan chapter berikutnya.</p><div style="display:grid;gap:10px">'+novels.map(n=>'<button type="button" data-pick-chapter-novel="'+n.id+'" style="text-align:left;padding:14px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;color:#18181b;cursor:pointer"><strong>'+esc(n.title)+'</strong><span style="display:block;color:#71717a;font-size:13px;margin-top:4px">Tambah chapter berikutnya</span></button>').join('')+'</div></div>';
+ document.body.appendChild(wrap);
+ $('[data-close]',wrap).onclick=()=>wrap.remove();
+ $('[data-pick-chapter-novel]',wrap).forEach(b=>b.onclick=()=>{
+   const novelId=b.dataset.pickChapterNovel;
+   wrap.remove();
+   editChapter(null,novelId).catch(err=>toast(err.message||'Gagal membuka editor Chapter',false));
+ });
+}
+
 async function chooseNovelForBab(){
  const {data:novels,error}=await supabase.from('novels').select('id,title,status').eq('status','published').order('title');
  if(error)throw error;
@@ -273,7 +289,7 @@ async function loadUsers(){
 const nav=$('#adminNav');if(nav&&!$('#usersLink')){const a=document.createElement('a');a.id='usersLink';a.href='#users';a.dataset.section='users';a.textContent='Pengguna';nav.appendChild(a)}
 const originalRoute = window.route;
 async function refreshAll(){try{await Promise.all([loadDashboard(),loadNovels(),loadBabs(),loadChapters(),loadGenres(),loadAds(),loadSettings(),loadUsers()])}catch(e){console.error(e);toast(e.message||'Gagal memuat data Admin',false)}}
-document.addEventListener('click',e=>{if(e.target.matches('#addNovelBtn'))editNovel(null);if(e.target.matches('#addBabFromNovelBtn'))chooseNovelForBab();if(e.target.matches('#addChapterStandaloneBtn'))editChapter(null);if(!e.target.closest('[data-novel-menu]')&&!e.target.closest('[data-more-novel]'))$$('[data-novel-menu]').forEach(m=>m.hidden=true)});
+document.addEventListener('click',e=>{if(e.target.matches('#addNovelBtn'))editNovel(null);if(e.target.matches('#addBabFromNovelBtn'))chooseNovelForBab();if(e.target.matches('#addChapterStandaloneBtn'))chooseNovelForChapter();if(!e.target.closest('[data-novel-menu]')&&!e.target.closest('[data-more-novel]'))$$('[data-novel-menu]').forEach(m=>m.hidden=true)});
 window.addEventListener('hashchange',()=>{if(location.hash==='#users'){ $$('.admin-section').forEach(s=>s.classList.toggle('active-section',s.id==='users'));$$('#adminNav a').forEach(a=>a.classList.toggle('active',a.dataset.section==='users')) }});
 await refreshAll();
 </script>
