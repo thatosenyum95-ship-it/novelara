@@ -16,7 +16,7 @@
 <section class="admin-section" id="dashboard"><header><div><p class="eyebrow">ADMIN PANEL</p><h1>Dashboard</h1><p class="muted">Ringkasan aktivitas Novelara.</p></div><span class="status">● Sistem aktif</span></header>
 <div class="stats"><article><span>Pengunjung</span><strong>—</strong><small>belum ada data</small></article><article><span>Pembaca</span><strong>0</strong><small>belum ada pembaca</small></article><article><span>Novel</span><strong>0</strong><small>belum ada novel</small></article><article><span>Pendapatan Iklan</span><strong>—</strong><small>belum ada data</small></article></div>
 <div class="panel"><h2>Novel populer</h2><p class="muted">Akan muncul setelah ada novel dan pembacaan nyata.</p><div class="table"><div class="row head"><span>Novel</span><span>Pembaca</span></div><p class="muted">Belum ada data.</p></div></div></section>
-<section class="admin-section" id="novel"><header><div><p class="eyebrow">KONTEN</p><h1>Kelola Novel</h1><p class="muted">Tambah, edit, hapus, dan atur genre novel.</p></div><button type="button">+ Tambah Novel</button></header><div class="panel"><div class="table"><div class="row head"><span>Judul</span><span>Genre</span><span>Status</span><span>Aksi</span></div><p class="muted">Belum ada novel.</p></div></div></section>
+<section class="admin-section" id="novel"><header><div><p class="eyebrow">KONTEN</p><h1>Kelola Novel</h1><p class="muted">Tambah, edit, hapus, dan atur genre novel.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" id="addNovelBtn">+ Tambah Novel</button><button type="button" id="addChapterFromNovelBtn">+ Tambah Bab</button></div></header><div class="panel"><div class="table"><div class="row head"><span>Judul</span><span>Genre</span><span>Status</span><span>Aksi</span></div><p class="muted">Belum ada novel.</p></div></div></section>
 <section class="admin-section" id="chapter"><header><div><p class="eyebrow">KONTEN</p><h1>Kelola Chapter</h1><p class="muted">Setiap novel memiliki daftar bab sendiri. Bab berikutnya dibuat langsung dari novel yang dipilih.</p></div></header><div id="chapterManager"><p class="muted">Memuat daftar novel…</p></div></section>
 <section class="admin-section" id="monetisasi"><header><div><p class="eyebrow">PENDAPATAN</p><h1>Monetisasi</h1><p class="muted">Atur iklan yang tampil di area pembaca.</p></div></header><div class="form-grid"><div class="panel"><h2>Posisi iklan</h2><p class="muted">Belum ada slot iklan. Tambahkan konfigurasi iklan saat sudah siap monetisasi.</p></div><div class="panel"><h2>Ad code</h2><textarea rows="9" placeholder="Tempel kode iklan dari jaringan iklan di sini..."></textarea><button type="button">Simpan Pengaturan Iklan</button></div></div></section>
 <section class="admin-section" id="pengaturan"><header><div><p class="eyebrow">KONFIGURASI</p><h1>Pengaturan Website</h1><p class="muted">Identitas, SEO, dan halaman informasi Novelara.</p></div></header><div class="panel settings-grid"><label>Nama Website<input value="Novelara"></label><label>Tagline<input value="Cerita yang Menemukan Hati"></label><label>Logo<input placeholder="URL logo"></label><label>SEO Description<textarea rows="4">Novel romance Indonesia yang menghadirkan kisah cinta untuk dibaca kapan saja.</textarea></label><label>About<textarea rows="4" placeholder="Deskripsi tentang Novelara..."></textarea></label><label>Contact<textarea rows="4" placeholder="Email atau informasi kontak..."></textarea></label></div></section>
@@ -147,6 +147,23 @@ async function loadChapters(){
    loadChapters();
  });
 }
+async function chooseNovelForChapter(){
+ const {data:novels,error}=await supabase.from('novels').select('id,title,status').eq('status','published').order('title');
+ if(error)throw error;
+ if(!novels?.length){toast('Belum ada novel yang sudah dirilis.',false);return}
+ modal('Pilih Novel untuk Tambah Bab',
+   '<p class="muted" style="margin-top:0">Pilih novel yang sudah dirilis untuk menambahkan bab berikutnya.</p>'+
+   '<div style="display:grid;gap:10px">'+
+   novels.map(n=>'<button type="button" data-pick-novel="'+n.id+'" style="text-align:left;padding:14px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;cursor:pointer"><strong>'+esc(n.title)+'</strong><span style="display:block;color:#71717a;font-size:13px;margin-top:4px">Tambah bab berikutnya</span></button>').join('')+
+   '</div>',
+   async()=>{}
+ );
+ const wrap=document.querySelector('body > div[style*="position:fixed"]');
+ if(wrap){
+   $('[data-pick-novel]',wrap).forEach(b=>b.onclick=()=>{wrap.remove();editChapter(null,b.dataset.pickNovel)});
+   const form=wrap.querySelector('[data-form]'); if(form) form.style.display='none';
+ }
+}
 async function editChapter(id, preferredNovelId=null){
  const [{data:c,error},{data:novels}]=await Promise.all([
    id
@@ -225,7 +242,7 @@ async function loadUsers(){
 const nav=$('#adminNav');if(nav&&!$('#usersLink')){const a=document.createElement('a');a.id='usersLink';a.href='#users';a.dataset.section='users';a.textContent='Pengguna';nav.appendChild(a)}
 const originalRoute = window.route;
 async function refreshAll(){try{await Promise.all([loadDashboard(),loadNovels(),loadChapters(),loadGenres(),loadAds(),loadSettings(),loadUsers()])}catch(e){console.error(e);toast(e.message||'Gagal memuat data Admin',false)}}
-document.addEventListener('click',e=>{if(e.target.matches('#novel header button'))editNovel(null);if(!e.target.closest('[data-novel-menu]')&&!e.target.closest('[data-more-novel]'))$$('[data-novel-menu]').forEach(m=>m.hidden=true)});
+document.addEventListener('click',e=>{if(e.target.matches('#addNovelBtn'))editNovel(null);if(e.target.matches('#addChapterFromNovelBtn'))chooseNovelForChapter();if(!e.target.closest('[data-novel-menu]')&&!e.target.closest('[data-more-novel]'))$$('[data-novel-menu]').forEach(m=>m.hidden=true)});
 window.addEventListener('hashchange',()=>{if(location.hash==='#users'){ $$('.admin-section').forEach(s=>s.classList.toggle('active-section',s.id==='users'));$$('#adminNav a').forEach(a=>a.classList.toggle('active',a.dataset.section==='users')) }});
 await refreshAll();
 </script>
