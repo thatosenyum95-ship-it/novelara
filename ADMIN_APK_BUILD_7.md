@@ -1,0 +1,1 @@
+Trigger a fresh Novelara Admin APK build after Java setup fix.
