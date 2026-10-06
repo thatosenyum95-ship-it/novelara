@@ -1,0 +1,1 @@
+Trigger a signed Novelara Admin APK build.
