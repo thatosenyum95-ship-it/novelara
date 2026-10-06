@@ -1,0 +1,1 @@
+Trigger installable Novelara Admin APK build.
