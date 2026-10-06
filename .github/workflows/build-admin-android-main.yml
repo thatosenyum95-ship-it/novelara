@@ -37,6 +37,41 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Create temporary release keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore android/admin-release.keystore \
+            -alias novelaraadmin \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass novelara123 -keypass novelara123 \
+            -dname "CN=Novelara Admin, OU=Novelara, O=Novelara, L=Pontianak, ST=West Kalimantan, C=ID"
+
+      - name: Configure release signing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle")
+          s = p.read_text()
+          marker = "buildTypes {"
+          signing = '''signingConfigs {
+              release {
+                  storeFile file("../admin-release.keystore")
+                  storePassword "novelara123"
+                  keyAlias "novelaraadmin"
+                  keyPassword "novelara123"
+              }
+          }
+
+          '''
+          if "signingConfigs {" not in s:
+              s = s.replace(marker, signing + marker, 1)
+          release_marker = "release {"
+          replacement = 'release {\n            signingConfig signingConfigs.release'
+          if "signingConfig signingConfigs.release" not in s:
+              s = s.replace(release_marker, replacement, 1)
+          p.write_text(s)
+          PY
+
       - name: Build release APK
         working-directory: android
         run: ./gradlew assembleRelease
@@ -45,5 +80,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: novelara-admin-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
