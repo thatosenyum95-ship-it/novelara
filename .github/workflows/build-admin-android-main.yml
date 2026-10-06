@@ -13,23 +13,35 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: admin-apk
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: gradle
+
       - name: Install dependencies
-        run: npm ci
+        run: npm install
+
       - name: Add Android platform
         run: npx cap add android --config capacitor.admin.config.ts
+
       - name: Sync Capacitor
         run: npx cap sync android --config capacitor.admin.config.ts
+
       - name: Build release APK
         working-directory: android
         run: ./gradlew assembleRelease
+
+      - name: Upload Admin APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: novelara-admin-release
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
