@@ -25,6 +25,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Install image conversion tool
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+
       - name: Install dependencies
         run: npm install
 
@@ -37,7 +40,7 @@ jobs:
       - name: Apply ADMIN icon
         run: |
           mkdir -p android/app/src/main/res/drawable
-          magick resources/admin-icon.svg -background none -resize 512x512 android/app/src/main/res/drawable/admin_icon.png
+          convert -background none resources/admin-icon.svg -resize 512x512 android/app/src/main/res/drawable/admin_icon.png
           python3 - <<'PY'
           from pathlib import Path
           p = Path("android/app/src/main/AndroidManifest.xml")
