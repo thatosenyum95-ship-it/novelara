@@ -45,8 +45,8 @@ jobs:
           from pathlib import Path
           p = Path("android/app/src/main/AndroidManifest.xml")
           s = p.read_text()
-          s = s.replace('@mipmap/ic_launcher', '@drawable/admin_icon')
           s = s.replace('@mipmap/ic_launcher_round', '@drawable/admin_icon')
+          s = s.replace('@mipmap/ic_launcher', '@drawable/admin_icon')
           p.write_text(s)
           PY
 
