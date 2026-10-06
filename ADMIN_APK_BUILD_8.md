@@ -1,0 +1,1 @@
+Trigger a fresh Novelara Admin APK build after Capacitor config fix.
