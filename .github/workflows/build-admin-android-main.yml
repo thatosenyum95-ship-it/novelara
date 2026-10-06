@@ -28,11 +28,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Use Admin Capacitor config
+        run: cp capacitor.admin.config.ts capacitor.config.ts
+
       - name: Add Android platform
-        run: npx cap add android --config capacitor.admin.config.ts
+        run: npx cap add android
 
       - name: Sync Capacitor
-        run: npx cap sync android --config capacitor.admin.config.ts
+        run: npx cap sync android
 
       - name: Build release APK
         working-directory: android
